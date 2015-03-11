@@ -9,6 +9,7 @@ namespace SmartMaker
 	public class CommObject : MonoBehaviour
 	{
 		public EventHandler OnOpened;
+		public EventHandler OnOpenFailed;
 		public EventHandler OnErrorClosed;
 
 		public virtual void Open()

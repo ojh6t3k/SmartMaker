@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 
 namespace SmartMaker
@@ -11,12 +12,10 @@ namespace SmartMaker
 	{
 		public CommObject commObject;
 		public float timeoutSec = 5f;
-	//	public UnityModule[] modules = new UnityModule[0];
 
-		public List<EventDelegate> OnConnected;
-		public EventHandler OnConnectionFailed;
-		public EventHandler OnDisconnected;
-		public EventHandler OnUpdated;
+		public UnityEvent OnConnected;
+		public UnityEvent OnConnectionFailed;
+		public UnityEvent OnDisconnected;
 
 		private enum CMD
 		{
@@ -28,6 +27,7 @@ namespace SmartMaker
 			Ping = 0x85 //133
 		}
 
+		private AppAction[] _actions;
 		private bool _opened = false;
 		private bool _connected = false;
 		private float _time = 0f;
@@ -40,11 +40,10 @@ namespace SmartMaker
 
 		void Awake()
 		{
-			if(commObject == null)
-				Debug.LogError("commObject is Null!");
-			else
+			if(commObject != null)
 			{
 				commObject.OnOpened += CommOpenEventHandler;
+				commObject.OnOpenFailed += CommOpenFailEventHandler;
 				commObject.OnErrorClosed += CommErrorCloseEventHandler;
 			}
 		}
@@ -52,7 +51,9 @@ namespace SmartMaker
 		// Use this for initialization
 		void Start ()
 		{
-		
+			_actions = appActions;
+			foreach(AppAction action in _actions)
+				action.ActionSetup();
 		}
 			
 		// Update is called once per frame
@@ -72,13 +73,13 @@ namespace SmartMaker
 							if(readBytes[i] == (byte)CMD.Ping)
 							{
 								commObject.Write(new byte[] { (byte)CMD.Start, (byte)CMD.Ready });
-							//	foreach(UnityModule module in modules)
-							//		module.ModuleStart();
+								foreach(AppAction action in _actions)
+									action.ActionStart();
 								
 								TimeoutReset();
 								_connected = true;
 								_processProtocolTx = true;
-								EventDelegate.Execute(OnConnected);
+								OnConnected.Invoke();
 							}
 						}
 						else
@@ -104,8 +105,8 @@ namespace SmartMaker
 								TimeoutReset();
 								if(_processUpdate > 0)
 								{
-								//	foreach(UnityModule module in modules)
-								//		module.Action();
+									foreach(AppAction action in _actions)
+										action.ActionExcute();
 									
 									update = true;
 								}
@@ -158,11 +159,11 @@ namespace SmartMaker
 												bit++;
 											}
 										}
-									/*	foreach(UnityModule module in modules)
+										foreach(AppAction action in _actions)
 										{
-											if(module.id == _id)
-												module.dataBytes = _rxDataBytes.ToArray();
-										} */
+											if(action.id == _id)
+												action.dataBytes = _rxDataBytes.ToArray();
+										}
 										_processUpdate = 1;
 									}
 								}
@@ -174,8 +175,6 @@ namespace SmartMaker
 					
 					if(update == true)
 					{
-						if(OnUpdated != null)
-							OnUpdated(this, null);
 						commObject.Write(new byte[] { (byte)CMD.Ready });
 					}
 				}
@@ -185,54 +184,51 @@ namespace SmartMaker
 				{
 					if(_processProtocolTx == true)
 					{
-					/*	if(modules.Length > 0)
+						List<byte> writeBytes = new List<byte>();
+						foreach(AppAction action in _actions)
 						{
-							List<byte> writeBytes = new List<byte>();
-							foreach(UnityModule module in modules)
+							byte[] dataBytes = action.dataBytes;
+							if(dataBytes != null)
 							{
-								byte[] dataBytes = module.dataBytes;
-								if(dataBytes != null)
+								writeBytes.Add((byte)(action.id & 0x7F));
+								
+								// Encoding 7bit bytes
+								List<byte> data7bitBytes = new List<byte>();
+								byte bit = 1;
+								byte temp = 0;
+								for(int i=0; i<dataBytes.Length; i++)
 								{
-									writeBytes.Add((byte)(module.id & 0x7F));
-									
-									// Encoding 7bit bytes
-									List<byte> data7bitBytes = new List<byte>();
-									byte bit = 1;
-									byte temp = 0;
-									for(int i=0; i<dataBytes.Length; i++)
+									data7bitBytes.Add((byte)((temp | (dataBytes[i] >> bit)) & 0x7F));
+									if(bit == 7)
 									{
-										data7bitBytes.Add((byte)((temp | (dataBytes[i] >> bit)) & 0x7F));
-										if(bit == 7)
-										{
-											data7bitBytes.Add((byte)(dataBytes[i] & 0x7F));
-											bit = 1;
-											temp = 0;
-										}
-										else
-										{
-											temp = (byte)(dataBytes[i] << (7 - bit));
-											if(i == (dataBytes.Length - 1))
-												data7bitBytes.Add((byte)(temp & 0x7F));
-											bit++;
-										}
+										data7bitBytes.Add((byte)(dataBytes[i] & 0x7F));
+										bit = 1;
+										temp = 0;
 									}
-									
-									writeBytes.Add((byte)data7bitBytes.Count); // num bytes
-									writeBytes.AddRange(data7bitBytes.ToArray());
+									else
+									{
+										temp = (byte)(dataBytes[i] << (7 - bit));
+										if(i == (dataBytes.Length - 1))
+											data7bitBytes.Add((byte)(temp & 0x7F));
+										bit++;
+									}
 								}
+								
+								writeBytes.Add((byte)data7bitBytes.Count); // num bytes
+								writeBytes.AddRange(data7bitBytes.ToArray());
 							}
-							
-							if(writeBytes.Count > 0)
-							{
-								writeBytes.Insert(0, (byte)CMD.Update); // Update
-								writeBytes.Add((byte)CMD.Action); // Action
-								commObject.Write (writeBytes.ToArray());
-							}
-							else
-								commObject.Write(new byte[] { (byte)CMD.Update, (byte)CMD.Action });
-							
-							_processProtocolTx = false;
-						} */
+						}
+						
+						if(writeBytes.Count > 0)
+						{
+							writeBytes.Insert(0, (byte)CMD.Update); // Update
+							writeBytes.Add((byte)CMD.Action); // Action
+							commObject.Write (writeBytes.ToArray());
+						}
+						else
+							commObject.Write(new byte[] { (byte)CMD.Update, (byte)CMD.Action });
+						
+						_processProtocolTx = false;
 					}
 				}
 				
@@ -256,6 +252,14 @@ namespace SmartMaker
 			}
 		}
 
+		public AppAction[] appActions
+		{
+			get
+			{
+				return GetComponentsInChildren<AppAction>();
+			}
+		}
+
 		public bool Connected
 		{
 			get
@@ -269,13 +273,7 @@ namespace SmartMaker
 			if(commObject == null)
 				return;
 
-			try
-			{
-				commObject.Open();
-			}
-			catch(Exception)
-			{
-			}
+			commObject.Open();
 		}
 
 		private void ErrorDisconnect()
@@ -292,14 +290,12 @@ namespace SmartMaker
 			if(state == false)
 			{
 				Debug.Log("Failed to open CommObject!");
-				if(OnConnectionFailed != null)
-					OnConnectionFailed(this, null);
+				OnConnectionFailed.Invoke();
 			}
 			else
 			{
 				Debug.Log("Lost connection!");
-				if(OnDisconnected != null)
-					OnDisconnected(this, null);
+				OnDisconnected.Invoke();
 			}
 		}
 
@@ -319,8 +315,7 @@ namespace SmartMaker
 		//	foreach(UnityModule module in modules)
 		//		module.ModuleStop();
 			
-			if(OnDisconnected != null)
-				OnDisconnected(this, null);
+			OnDisconnected.Invoke();
 		}
 
 		private void TimeoutReset()
@@ -334,6 +329,11 @@ namespace SmartMaker
 			_opened = true;
 			TimeoutReset();
 			commObject.Write(new byte[] { (byte)CMD.Ping });
+		}
+
+		private void CommOpenFailEventHandler(object sender, EventArgs e)
+		{
+			ErrorDisconnect();
 		}
 
 		private void CommErrorCloseEventHandler(object sender, EventArgs e)

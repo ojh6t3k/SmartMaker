@@ -38,13 +38,21 @@ namespace SmartMaker
 		public override void Open()
 		{
 			_serialPort.PortName = "//./" + portName;
-			_serialPort.Open();
 
-			if(_serialPort.IsOpen == true)
+			try
 			{
-				if(OnOpened != null)
-					OnOpened(this, null);
+				_serialPort.Open();
+				if(_serialPort.IsOpen == true)
+				{
+					if(OnOpened != null)
+						OnOpened(this, null);
+				}
 			}
+			catch(Exception)
+			{
+				if(OnOpenFailed != null)
+					OnOpenFailed(this, null);
+			}			
 		}
 
 		public override void Close()
