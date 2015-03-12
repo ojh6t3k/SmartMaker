@@ -32,7 +32,7 @@ public class AnalogOutputInspector : Editor
 			EditorGUI.indentLevel--;
 		}
 
-		aOut.Value = EditorGUILayout.Slider("Analog Value", aOut.Value, 0f, 1f);
+		aOut.value = EditorGUILayout.Slider("Analog Value", aOut.value, 0f, 1f);
 
 		this.serializedObject.ApplyModifiedProperties();
 	}

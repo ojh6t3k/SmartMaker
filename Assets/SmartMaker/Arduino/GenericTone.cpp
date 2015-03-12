@@ -42,7 +42,6 @@ void GenericTone::OnProcess()
 void GenericTone::OnUpdate()
 {
 	UnityApp.pop(&_frequency);
-	UnityApp.pop(&_duration);
 }
 
 void GenericTone::OnExcute()
@@ -50,12 +49,7 @@ void GenericTone::OnExcute()
 	if(_frequency == 0)
 		noTone(_pin);
 	else
-	{
-		if(_duration == 0)
-			tone(_pin, _frequency);
-		else
-			tone(_pin, _frequency, _duration);
-	}
+		tone(_pin, _frequency);
 }
 
 void GenericTone::OnFlush()

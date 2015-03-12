@@ -104,17 +104,10 @@ namespace SmartMaker
 	public class GenericTone : AppAction
 	{
 		public int pin;
-		public bool playByAnimation = false;
+		public float frequency;
 
-		[HideInInspector] public float frequency;
-
-		public UnityEvent OnCompletedPlay;
-
-		private ToneFrequency _toneFrequency;
-		private ushort _frequency;
-		private ushort _duration;
-		
-		private float _remainTime;
+		private float _frequency;
+		private ushort _bfrequency;
 
 		void Awake()
 		{
@@ -129,29 +122,11 @@ namespace SmartMaker
 		// Update is called once per frame
 		void Update ()
 		{
-			if(Started == true)
+			if(frequency != _frequency)
 			{
-				if(playByAnimation == true)
-				{
-					if(_frequency != (ushort)frequency)
-					{
-						_frequency = (ushort)frequency;
-						_duration = 0;
-						SetDirty();
-					}
-				}
-				else
-				{
-					if(_remainTime > 0f)
-					{
-						_remainTime -= Time.deltaTime;
-						if(_remainTime <= 0f)
-						{
-							_remainTime = 0f;
-							OnCompletedPlay.Invoke();
-						}
-					}
-				}
+				_frequency = frequency;
+				_bfrequency = (ushort)_frequency;
+				SetDirty();
 			}
 		}
 
@@ -162,8 +137,6 @@ namespace SmartMaker
 
 		protected override void OnActionStart ()
 		{
-			_duration = 0;
-			_remainTime = 0;
 			autoUpdate = false;
 		}
 		
@@ -182,72 +155,14 @@ namespace SmartMaker
 		
 		protected override void OnPush ()
 		{
-			Push(_frequency);
-			Push(_duration);
-			
-			if(_frequency > 0)
-				_remainTime = (float)_duration * 0.001f;
-		}
-		
-		public void Play(int milliTime)
-		{
-			_frequency = (ushort)toneFrequency;
-			_duration = (ushort)milliTime;
-			SetDirty();
-		}
-		
-		public void Play(ToneFrequency frequency, int milliTime)
-		{
-			_frequency = (ushort)frequency;
-			_duration = (ushort)milliTime;
-			SetDirty();
-		}
-		
-		public void Play(int frequency, int milliTime)
-		{
-			_frequency = (ushort)frequency;
-			_duration = (ushort)milliTime;
-			SetDirty();
+			Push(_bfrequency);
 		}
 
 		public ToneFrequency toneFrequency
 		{
-			get
-			{
-				return _toneFrequency;
-			}
 			set
 			{
-				if(_toneFrequency != value)
-				{
-					_toneFrequency = value;
-					_duration = 0;
-					SetDirty();
-				}
-			}
-		}
-		
-		public int currentFrequency
-		{
-			get
-			{
-				return (int)_frequency;
-			}
-		}
-		
-		public int currentDuration
-		{
-			get
-			{
-				return (int)_duration;
-			}
-		}
-		
-		public int remainTime
-		{
-			get
-			{
-				return (int)(_remainTime * 1000f);
+				frequency = (float)value;
 			}
 		}
 	}

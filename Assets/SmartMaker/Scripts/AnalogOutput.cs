@@ -8,9 +8,13 @@ namespace SmartMaker
 	public class AnalogOutput : AppAction
 	{
 		public int pin;
-		
-		[SerializeField] private byte _value;
-		
+
+		public float value;
+
+		private float _value;
+		private byte _bValue;
+
+
 		void Awake()
 		{
 		}
@@ -24,26 +28,15 @@ namespace SmartMaker
 		// Update is called once per frame
 		void Update ()
 		{
-			
-		}
-		
-		public float Value
-		{
-			get
+			if(value != _value)
 			{
-				return (float)_value / 255f;
-			}
-			set
-			{
-				int newValue = (int)(value * 255f);
-				if(_value != (byte)newValue)
-				{
-					_value = (byte)newValue;
-					SetDirty();
-				}
+				_value = value;
+				int iValue = (int)Mathf.Clamp(_value * 255f, 0f, 255f);
+				_bValue = (byte)iValue;
+				SetDirty();
 			}
 		}
-		
+
 		public override string SketchDeclaration()
 		{
 			return string.Format("{0} {1}({2:d}, {3:d});", this.GetType().Name, this.name, id, pin);
@@ -72,7 +65,7 @@ namespace SmartMaker
 		
 		protected override void OnPush ()
 		{
-			Push(_value);
+			Push(_bValue);
 		}
 	}
 }

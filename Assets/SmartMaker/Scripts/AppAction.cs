@@ -12,7 +12,9 @@ namespace SmartMaker
 	{
 		public int id;
 
+		public UnityEvent OnStarted;
 		public UnityEvent OnExcuted;
+		public UnityEvent OnStopped;
 
 		private List<byte> _dataBytes = new List<byte>();
 		private const int _maxNumBytes = 116;
@@ -90,6 +92,7 @@ namespace SmartMaker
 			_started = true;
 			
 			OnActionStart();
+			OnStarted.Invoke();
 		}
 		
 		public void ActionExcute()
@@ -108,6 +111,7 @@ namespace SmartMaker
 			_started = false;
 			
 			OnActionStop();
+			OnStopped.Invoke();
 		}
 		
 		protected bool Push(byte value)

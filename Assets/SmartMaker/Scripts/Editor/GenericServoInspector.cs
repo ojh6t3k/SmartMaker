@@ -35,8 +35,8 @@ public class GenericServoInspector : Editor
 		}
 
 		EditorGUILayout.PropertyField(offsetAngle, new GUIContent("Offset Angle"));
-		servo.Angle = (int)EditorGUILayout.Slider("Angle", servo.Angle, -90f, 90f);
-		
+		servo.angle = (int)EditorGUILayout.Slider("Angle", servo.angle, -90f, 90f);
+
 		this.serializedObject.ApplyModifiedProperties();
 	}
 }

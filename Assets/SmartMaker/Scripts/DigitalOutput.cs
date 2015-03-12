@@ -8,8 +8,11 @@ namespace SmartMaker
 	public class DigitalOutput : AppAction
 	{
 		public int pin;
-		
-		[SerializeField] private byte _value;
+
+		public bool value;
+
+		private bool _value;
+		private byte _bValue;
 
 		void Awake()
 		{
@@ -24,29 +27,14 @@ namespace SmartMaker
 		// Update is called once per frame
 		void Update ()
 		{
-		
-		}
+			if(value != _value)
+			{
+				_value = value;
+				_bValue = 0;
+				if(_value == true)
+					_bValue = 1;
 
-		public bool Value
-		{
-			get
-			{
-				if(_value == 0)
-					return false;
-				else
-					return true;
-			}
-			set
-			{
-				byte bValue = 0;
-				if(value == true)
-					bValue = 1;
-					
-				if(_value != bValue)
-				{
-					_value = bValue;
-					SetDirty();
-				}
+				SetDirty();
 			}
 		}
 
@@ -78,7 +66,7 @@ namespace SmartMaker
 
 		protected override void OnPush ()
 		{
-			Push(_value);
+			Push(_bValue);
 		}
 	}
 }

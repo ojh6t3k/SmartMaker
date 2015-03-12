@@ -33,15 +33,15 @@ public class DigitalOutputInspector : Editor
 		}
 
 		int index = 0;
-		if(dOut.Value == true)
+		if(dOut.value == true)
 			index = 1;
 		int newIndex = GUILayout.SelectionGrid(index, new string[] {"FALSE", "TRUE"}, 2);
 		if(index != newIndex)
 		{
 			if(newIndex == 0)
-				dOut.Value = false;
+				dOut.value = false;
 			else
-				dOut.Value = true;
+				dOut.value = true;
 		}
 		
 		this.serializedObject.ApplyModifiedProperties();

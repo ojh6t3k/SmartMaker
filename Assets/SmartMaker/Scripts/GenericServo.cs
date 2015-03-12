@@ -10,8 +10,10 @@ namespace SmartMaker
 	{
 		public int pin;
 		public float offsetAngle = 0f;
-		
-		[SerializeField] private byte _angle;
+		public float angle;
+
+		private float _angle;
+		private byte _bAngle;
 		
 		void Awake()
 		{
@@ -20,29 +22,18 @@ namespace SmartMaker
 		// Use this for initialization
 		void Start ()
 		{
-			
+			_angle = -180f;
 		}
 		
 		// Update is called once per frame
 		void Update ()
 		{
-			
-		}
-		
-		public float Angle
-		{
-			get
+			if(angle != _angle)
 			{
-				return (float)_angle - 90f;
-			}
-			set
-			{
-				int newAngle = (int)(Mathf.Clamp(value, -90f, 90f) + 90f);
-				if(_angle != (byte)newAngle)
-				{
-					_angle = (byte)newAngle;
-					SetDirty();
-				}
+				_angle = angle;
+				int iAngle = (int)Mathf.Clamp(_angle + 90f, 0f, 180f);
+				_bAngle = (byte)iAngle;
+				SetDirty();
 			}
 		}
 
@@ -81,7 +72,7 @@ namespace SmartMaker
 		
 		protected override void OnPush ()
 		{
-			int angle = (int)Mathf.Clamp((float)_angle + offsetAngle, 0f, 180f);
+			int angle = (int)Mathf.Clamp((float)_bAngle + offsetAngle, 0f, 180f);
 			Push((byte)angle);
 		}
 	}

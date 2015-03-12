@@ -1,18 +1,17 @@
 /*
-  GenericTone.h - SmartMaker library
+  DigitalOutput.h - SmartMaker library
   Copyright (C) 2015 ojh6t3k.  All rights reserved.
 */
-
-#ifndef GenericTone_h
-#define GenericTone_h
+#ifndef DigitalOutput_h
+#define DigitalOutput_h
 
 #include "AppAction.h"
 
 
-class GenericTone : AppAction
+class DigitalOutput : AppAction
 {
 public:
-	GenericTone(int id, int pin);
+	DigitalOutput(int id, int pin);	
 
 protected:
 	void OnSetup();
@@ -25,7 +24,7 @@ protected:
 
 private:
     int _pin;
-	word _frequency;
+	byte _state;
 };
 
 #endif

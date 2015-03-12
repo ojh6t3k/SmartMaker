@@ -8,20 +8,15 @@ using SmartMaker;
 public class GenericToneInspector : Editor
 {
 	bool foldout = true;
-	ToneFrequency toneFrequency;
-	int duration;
+	ToneFrequency toneFrequency = ToneFrequency.MUTE;
 
 	SerializedProperty id;
 	SerializedProperty pin;
-	SerializedProperty playByAnimation;
-	SerializedProperty OnCompletedPlay;
-	
+
 	void OnEnable()
 	{
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
-		playByAnimation = serializedObject.FindProperty("playByAnimation");
-		OnCompletedPlay = serializedObject.FindProperty("OnCompletedPlay");
 	}
 	
 	public override void OnInspectorGUI()
@@ -38,22 +33,15 @@ public class GenericToneInspector : Editor
 			EditorGUILayout.PropertyField(pin, new GUIContent("pin"));
 			EditorGUI.indentLevel--;
 		}
-		EditorGUILayout.PropertyField(playByAnimation, new GUIContent("Play by Animation"));
 
 		toneFrequency = (ToneFrequency)EditorGUILayout.EnumPopup("Tone Frequency", toneFrequency);
-		duration = EditorGUILayout.IntField("Duration(msec)", duration);
+		GUILayout.BeginHorizontal();
 		if(GUILayout.Button("Play") == true)
-			tone.Play(toneFrequency, duration);
+			tone.toneFrequency = toneFrequency;
+		if(GUILayout.Button("Mute") == true)
+			tone.toneFrequency = ToneFrequency.MUTE;
+		GUILayout.EndHorizontal();
 
-		if(tone.remainTime > 0)
-		{
-			EditorGUILayout.IntField("Remain Time", tone.remainTime);
-			EditorUtility.SetDirty(target);
-		}
-		
-		EditorGUILayout.Separator();
-		EditorGUILayout.PropertyField(OnCompletedPlay);
-		
 		this.serializedObject.ApplyModifiedProperties();
 	}
 }
