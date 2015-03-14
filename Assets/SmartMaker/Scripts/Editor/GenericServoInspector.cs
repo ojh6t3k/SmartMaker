@@ -11,12 +11,16 @@ public class GenericServoInspector : Editor
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty offsetAngle;
+	SerializedProperty OnStarted;
+	SerializedProperty OnStopped;
 	
 	void OnEnable()
 	{
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		offsetAngle = serializedObject.FindProperty("offsetAngle");
+		OnStarted = serializedObject.FindProperty("OnStarted");
+		OnStopped = serializedObject.FindProperty("OnStopped");
 	}
 	
 	public override void OnInspectorGUI()
@@ -36,6 +40,10 @@ public class GenericServoInspector : Editor
 
 		EditorGUILayout.PropertyField(offsetAngle, new GUIContent("Offset Angle"));
 		servo.angle = (int)EditorGUILayout.Slider("Angle", servo.angle, -90f, 90f);
+
+		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(OnStarted);
+		EditorGUILayout.PropertyField(OnStopped);
 
 		this.serializedObject.ApplyModifiedProperties();
 	}

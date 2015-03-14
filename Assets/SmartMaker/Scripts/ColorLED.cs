@@ -5,7 +5,7 @@ using System;
 namespace SmartMaker
 {
 	[AddComponentMenu("SmartMaker/Utility/ColorLED")]
-	public class ColorLED : MonoBehaviour
+	public class ColorLED : AppActionUtil
 	{
 		public AnalogOutput analogRed;
 		public AnalogOutput analogGreen;

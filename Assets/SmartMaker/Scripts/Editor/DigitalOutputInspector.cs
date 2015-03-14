@@ -10,11 +10,15 @@ public class DigitalOutputInspector : Editor
 	bool foldout = true;
 	SerializedProperty id;
 	SerializedProperty pin;
+	SerializedProperty OnStarted;
+	SerializedProperty OnStopped;
 
 	void OnEnable()
 	{
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
+		OnStarted = serializedObject.FindProperty("OnStarted");
+		OnStopped = serializedObject.FindProperty("OnStopped");
 	}
 
 	public override void OnInspectorGUI()
@@ -43,6 +47,10 @@ public class DigitalOutputInspector : Editor
 			else
 				dOut.value = true;
 		}
+
+		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(OnStarted);
+		EditorGUILayout.PropertyField(OnStopped);
 		
 		this.serializedObject.ApplyModifiedProperties();
 	}

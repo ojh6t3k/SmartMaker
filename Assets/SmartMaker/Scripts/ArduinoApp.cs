@@ -284,9 +284,9 @@ namespace SmartMaker
 			
 			commObject.Close();
 
-		//	foreach(UnityModule module in modules)
-		//		module.ModuleStop();
-			
+			foreach(AppAction action in _actions)
+				action.ActionStop();
+
 			if(state == false)
 			{
 				Debug.Log("Failed to open CommObject!");
@@ -312,8 +312,8 @@ namespace SmartMaker
 
 			commObject.Close();
 
-		//	foreach(UnityModule module in modules)
-		//		module.ModuleStop();
+			foreach(AppAction action in _actions)
+				action.ActionStop();
 			
 			OnDisconnected.Invoke();
 		}

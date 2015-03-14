@@ -10,11 +10,15 @@ public class AnalogOutputInspector : Editor
 	bool foldout = true;
 	SerializedProperty id;
 	SerializedProperty pin;
+	SerializedProperty OnStarted;
+	SerializedProperty OnStopped;
 	
 	void OnEnable()
 	{
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
+		OnStarted = serializedObject.FindProperty("OnStarted");
+		OnStopped = serializedObject.FindProperty("OnStopped");
 	}
 	
 	public override void OnInspectorGUI()
@@ -33,6 +37,10 @@ public class AnalogOutputInspector : Editor
 		}
 
 		aOut.value = EditorGUILayout.Slider("Analog Value", aOut.value, 0f, 1f);
+
+		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(OnStarted);
+		EditorGUILayout.PropertyField(OnStopped);
 
 		this.serializedObject.ApplyModifiedProperties();
 	}

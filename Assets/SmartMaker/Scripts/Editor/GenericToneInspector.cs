@@ -12,11 +12,15 @@ public class GenericToneInspector : Editor
 
 	SerializedProperty id;
 	SerializedProperty pin;
+	SerializedProperty OnStarted;
+	SerializedProperty OnStopped;
 
 	void OnEnable()
 	{
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
+		OnStarted = serializedObject.FindProperty("OnStarted");
+		OnStopped = serializedObject.FindProperty("OnStopped");
 	}
 	
 	public override void OnInspectorGUI()
@@ -34,13 +38,22 @@ public class GenericToneInspector : Editor
 			EditorGUI.indentLevel--;
 		}
 
+		GUILayout.BeginHorizontal();
 		toneFrequency = (ToneFrequency)EditorGUILayout.EnumPopup("Tone Frequency", toneFrequency);
+		int frequency = (int)toneFrequency;
+		EditorGUILayout.LabelField(frequency.ToString());
+		GUILayout.EndHorizontal();
+
 		GUILayout.BeginHorizontal();
 		if(GUILayout.Button("Play") == true)
 			tone.toneFrequency = toneFrequency;
 		if(GUILayout.Button("Mute") == true)
 			tone.toneFrequency = ToneFrequency.MUTE;
 		GUILayout.EndHorizontal();
+
+		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(OnStarted);
+		EditorGUILayout.PropertyField(OnStopped);
 
 		this.serializedObject.ApplyModifiedProperties();
 	}

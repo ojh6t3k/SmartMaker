@@ -7,7 +7,7 @@ using UnityEngine.Events;
 namespace SmartMaker
 {
 	[AddComponentMenu("SmartMaker/Utility/AnalogInputDrag")]
-	public class AnalogInputDrag : MonoBehaviour
+	public class AnalogInputDrag : AppActionUtil
 	{
 		public AnalogInput analogInput;
 		[Range(0f, 1f)]

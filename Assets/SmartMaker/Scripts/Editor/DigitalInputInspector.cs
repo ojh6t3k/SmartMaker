@@ -11,6 +11,9 @@ public class DigitalInputInspector : Editor
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty pullup;
+	SerializedProperty OnStarted;
+	SerializedProperty OnExcuted;
+	SerializedProperty OnStopped;
 	SerializedProperty OnChangedValue;
 	
 	void OnEnable()
@@ -18,6 +21,9 @@ public class DigitalInputInspector : Editor
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		pullup = serializedObject.FindProperty("pullup");
+		OnStarted = serializedObject.FindProperty("OnStarted");
+		OnExcuted = serializedObject.FindProperty("OnExcuted");
+		OnStopped = serializedObject.FindProperty("OnStopped");
 		OnChangedValue = serializedObject.FindProperty("OnChangedValue");
 	}
 	
@@ -44,6 +50,9 @@ public class DigitalInputInspector : Editor
 		GUILayout.SelectionGrid(index, new string[] {"FALSE", "TRUE"}, 2);
 
 		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(OnStarted);
+		EditorGUILayout.PropertyField(OnExcuted);
+		EditorGUILayout.PropertyField(OnStopped);
 		EditorGUILayout.PropertyField(OnChangedValue);
 
 		if(Application.isPlaying == true && dInput.autoUpdate == true)

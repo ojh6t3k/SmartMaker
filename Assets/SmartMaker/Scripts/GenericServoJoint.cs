@@ -4,7 +4,7 @@ using System.Collections;
 namespace SmartMaker
 {
 	[AddComponentMenu("SmartMaker/Utility/GenericServoJoint")]
-	public class GenericServoJoint : MonoBehaviour
+	public class GenericServoJoint : AppActionUtil
 	{
 		public GenericServo genericServo;
 		public Vector3 forward;

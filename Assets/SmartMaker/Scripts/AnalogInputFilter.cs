@@ -6,7 +6,7 @@ using System;
 namespace SmartMaker
 {
 	[AddComponentMenu("SmartMaker/Utility/AnalogInputFilter")]
-	public class AnalogInputFilter : MonoBehaviour
+	public class AnalogInputFilter : AppActionUtil
 	{
 		public AnalogInput analogInput;
 		[Range(0f, 1f)]
