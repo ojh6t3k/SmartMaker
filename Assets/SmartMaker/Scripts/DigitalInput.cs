@@ -14,6 +14,7 @@ namespace SmartMaker
 
 		public UnityEvent OnChangedValue;
 
+		private bool _first;
 		private byte _newValue;
 		private byte _value;
 		
@@ -62,13 +63,15 @@ namespace SmartMaker
 		protected override void OnActionStart ()
 		{
 			_newValue = _value;
+			_first = true;
 		}
 		
 		protected override void OnActionExcute ()
 		{
-			if(_newValue != _value)
+			if(_newValue != _value || _first == true)
 			{
 				_value = _newValue;
+				_first = false;
 				OnChangedValue.Invoke();
 			}
 		}

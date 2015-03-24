@@ -35,7 +35,7 @@ public class ArduinoAppInspector : Editor
 		if(Application.isPlaying == false)
 		{
 			if(GUILayout.Button("Create Sketch") == true)
-				CreateSketch(EditorUtility.SaveFolderPanel("Select Folder", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ""), arduino.appActions);
+				CreateSketch(EditorUtility.SaveFilePanel("Create Sketch", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "", "ino"), arduino.appActions);
 		}
 		else
 		{
@@ -71,7 +71,7 @@ public class ArduinoAppInspector : Editor
 		this.serializedObject.ApplyModifiedProperties();
 	}
 
-	private void CreateSketch(string path, AppAction[] actions)
+	private void CreateSketch(string file, AppAction[] actions)
 	{
 		List<Type> types = new List<Type>();
 		List<string> exIncludes = new List<string>();
@@ -119,9 +119,9 @@ public class ArduinoAppInspector : Editor
 		source.AppendLine("  UnityApp.process();");
 		source.AppendLine("}");
 
-		path = Path.Combine(path, "SmartMaker");
+		string path = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file));
 		Directory.CreateDirectory(path);
-		StreamWriter sw = new StreamWriter(Path.Combine(path, "SmartMaker.ino"));
+		StreamWriter sw = new StreamWriter(Path.Combine(path, Path.GetFileName(file)));
 		sw.Write(source.ToString());
 		sw.Close();
 
