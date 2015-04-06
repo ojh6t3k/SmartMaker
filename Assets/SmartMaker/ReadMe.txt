@@ -1,16 +1,21 @@
 Smart Maker for Unity3D
 
 [Release]
--Version: v1.0.0b1
--Date: April/1/2015
+-Version: v1.0.0b2
+-Date: ?/?/2015
 
 
 [What's purpose]
 Smart Maker is designed to produce a very good App content using the Unity3D and Arduino.
 
 
-[How to use]
+[Help & Tutorials]
 Coming soon...
+
+
+[Independency]
+-Unity3D 5.x higher
+-PlayMaker (Option)
 
 
 [License]
