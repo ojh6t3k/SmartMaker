@@ -73,6 +73,12 @@ public class ArduinoAppInspector : Editor
 
 	private void CreateSketch(string file, AppAction[] actions)
 	{
+		if(file == null)
+			return;
+
+		if(file.Length == 0)
+			return;
+
 		List<Type> types = new List<Type>();
 		List<string> exIncludes = new List<string>();
 		foreach(AppAction action in actions)
@@ -126,10 +132,17 @@ public class ArduinoAppInspector : Editor
 		sw.Close();
 
 		string srcPath = "Assets/SmartMaker/Arduino";
-		CopyLibrary("UnityApp", srcPath, path);
-		CopyLibrary("AppAction", srcPath, path);
-		foreach(Type type in types)
-			CopyLibrary(type.Name, srcPath, path);
+		try
+		{
+			CopyLibrary("UnityApp", srcPath, path);
+			CopyLibrary("AppAction", srcPath, path);
+			foreach(Type type in types)
+				CopyLibrary(type.Name, srcPath, path);
+		}
+		catch(Exception)
+		{
+			Debug.LogError("Copy error! It must be in the \"Assetes/SmartMaker/Arduino\" path.");
+		}
 	}
 
 	private void CopyLibrary(string name, string srcPath, string destPath)
