@@ -40,8 +40,9 @@ public class ArduinoAppInspector : Editor
 
 		if(Application.isPlaying == false)
 		{
+			EditorGUILayout.HelpBox("To connect the board is only possible in Play mode.", MessageType.Info);
 			if(GUILayout.Button("Create Sketch") == true)
-				CreateSketch(EditorUtility.SaveFilePanel("Create Sketch", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "", "ino"), arduino.appActions);
+				CreateSketch(EditorUtility.SaveFilePanel("Create Sketch", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "", "ino"));
 
 			foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 			if(foldout == true)
@@ -86,7 +87,7 @@ public class ArduinoAppInspector : Editor
 		this.serializedObject.ApplyModifiedProperties();
 	}
 
-	private void CreateSketch(string file, AppAction[] actions)
+	private void CreateSketch(string file)
 	{
 		if(file == null)
 			return;
@@ -94,6 +95,24 @@ public class ArduinoAppInspector : Editor
 		if(file.Length == 0)
 			return;
 
+		ArduinoApp arduino = (ArduinoApp)target;
+		AppAction[] actions = arduino.appActions;
+		StringBuilder source = new StringBuilder();
+
+		// Check id duplications
+		for(int i=0; i<actions.Length; i++)
+		{
+			for(int j=i+1; j<actions.Length; j++)
+			{
+				if(actions[i].id == actions[j].id)
+				{
+					Debug.LogError("AppAction ID is duplicated!");
+					return;
+				}
+			}
+		}
+
+		// #Includes
 		List<Type> types = new List<Type>();
 		List<string> exIncludes = new List<string>();
 		foreach(AppAction action in actions)
@@ -113,9 +132,6 @@ public class ArduinoAppInspector : Editor
 				}
 			}
 		}
-
-		StringBuilder source = new StringBuilder();
-
 		foreach(string include in exIncludes)
 			source.AppendLine(include);
 		source.AppendLine("#include \"UnityApp.h\"");
@@ -123,26 +139,29 @@ public class ArduinoAppInspector : Editor
 			source.AppendLine(string.Format("#include \"{0}.h\"", type.Name));
 		source.AppendLine();
 
+		// Declarations
 		foreach(AppAction action in actions)
 			source.AppendLine(action.SketchDeclaration());
 		source.AppendLine();
 
+		// void Setup()
 		source.AppendLine("void setup()");
 		source.AppendLine("{");
 		foreach(AppAction action in actions)
 			source.AppendLine(string.Format("  UnityApp.attachAction((AppAction*)&{0});", action.SketchVarName));
-		ArduinoApp arduino = (ArduinoApp)target;
 		if(arduino.uartNum > 0)
 			source.AppendLine(string.Format("  UnityApp.attachSerial(&Serial{0:d});", arduino.uartNum));
 		source.AppendLine(string.Format("  UnityApp.begin({0:d});", arduino.uartBaudrate));
 		source.AppendLine("}");
 		source.AppendLine();
 
+		// void loop()
 		source.AppendLine("void loop()");
 		source.AppendLine("{");
 		source.AppendLine("  UnityApp.process();");
 		source.AppendLine("}");
 
+		// Create source
 		string path = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file));
 		Directory.CreateDirectory(path);
 		StreamWriter sw = new StreamWriter(Path.Combine(path, Path.GetFileName(file)));

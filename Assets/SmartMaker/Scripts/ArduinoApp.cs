@@ -264,7 +264,7 @@ namespace SmartMaker
 		{
 			get
 			{
-				return GetComponentsInChildren<AppAction>();
+				return GameObject.FindObjectsOfType<AppAction>();
 			}
 		}
 
