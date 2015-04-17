@@ -11,8 +11,12 @@ using SmartMaker;
 [CustomEditor(typeof(ArduinoApp))]
 public class ArduinoAppInspector : Editor
 {
+	bool foldout = true;
+
 	SerializedProperty commObject;
 	SerializedProperty timeoutSec;
+	SerializedProperty uartNum;
+	SerializedProperty uartBaudrate;
 	SerializedProperty OnConnected;
 	SerializedProperty OnConnectionFailed;
 	SerializedProperty OnDisconnected;
@@ -21,6 +25,8 @@ public class ArduinoAppInspector : Editor
 	{
 		commObject = serializedObject.FindProperty("commObject");
 		timeoutSec = serializedObject.FindProperty("timeoutSec");
+		uartNum = serializedObject.FindProperty("uartNum");
+		uartBaudrate = serializedObject.FindProperty("uartBaudrate");
 		OnConnected = serializedObject.FindProperty("OnConnected");
 		OnConnectionFailed = serializedObject.FindProperty("OnConnectionFailed");
 		OnDisconnected = serializedObject.FindProperty("OnDisconnected");
@@ -36,6 +42,15 @@ public class ArduinoAppInspector : Editor
 		{
 			if(GUILayout.Button("Create Sketch") == true)
 				CreateSketch(EditorUtility.SaveFilePanel("Create Sketch", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "", "ino"), arduino.appActions);
+
+			foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
+			if(foldout == true)
+			{
+				EditorGUI.indentLevel++;
+				EditorGUILayout.PropertyField(uartNum, new GUIContent("UART (Serial_)"));
+				EditorGUILayout.PropertyField(uartBaudrate, new GUIContent("UART Baudrate"));
+				EditorGUI.indentLevel--;
+			}
 		}
 		else
 		{
@@ -87,7 +102,7 @@ public class ArduinoAppInspector : Editor
 			if(types.IndexOf(type) < 0)
 			{
 				types.Add(type);
-				string[] includes = action.SketchExternalIncludes();
+				string[] includes = action.SketchIncludes();
 				if(includes != null)
 				{
 					foreach(string include in includes)
@@ -115,8 +130,11 @@ public class ArduinoAppInspector : Editor
 		source.AppendLine("void setup()");
 		source.AppendLine("{");
 		foreach(AppAction action in actions)
-			source.AppendLine(string.Format("  UnityApp.attachAction((AppAction*)&{0});", action.name));
-		source.AppendLine("  UnityApp.begin(115200);");
+			source.AppendLine(string.Format("  UnityApp.attachAction((AppAction*)&{0});", action.SketchVarName));
+		ArduinoApp arduino = (ArduinoApp)target;
+		if(arduino.uartNum > 0)
+			source.AppendLine(string.Format("  UnityApp.attachSerial(&Serial{0:d});", arduino.uartNum));
+		source.AppendLine(string.Format("  UnityApp.begin({0:d});", arduino.uartBaudrate));
 		source.AppendLine("}");
 		source.AppendLine();
 

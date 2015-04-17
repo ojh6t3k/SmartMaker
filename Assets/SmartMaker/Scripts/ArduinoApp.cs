@@ -12,6 +12,8 @@ namespace SmartMaker
 	{
 		public CommObject commObject;
 		public float timeoutSec = 5f;
+		public int uartNum = 0;
+		public int uartBaudrate = 115200;
 
 		public UnityEvent OnConnected;
 		public UnityEvent OnConnectionFailed;
@@ -45,6 +47,12 @@ namespace SmartMaker
 				commObject.OnOpened += CommOpenEventHandler;
 				commObject.OnOpenFailed += CommOpenFailEventHandler;
 				commObject.OnErrorClosed += CommErrorCloseEventHandler;
+			}
+			else
+			{
+				CommSerial serial = (CommSerial)commObject;
+				if(serial != null)
+					serial.baudrate = uartBaudrate;
 			}
 		}
 

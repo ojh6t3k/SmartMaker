@@ -39,7 +39,15 @@ namespace SmartMaker
 
 		public override string SketchDeclaration()
 		{
-			return string.Format("{0} {1}({2:d}, {3:d});", this.GetType().Name, this.name, id, pin);
+			return string.Format("{0} {1}({2:d}, {3:d});", this.GetType().Name, SketchVarName, id, pin);
+		}
+
+		public override string SketchVarName
+		{
+			get
+			{
+				return string.Format("aOutput{0:d}", id);
+			}
 		}
 		
 		protected override void OnActionSetup ()

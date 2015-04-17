@@ -18,7 +18,7 @@ namespace SmartMaker
 
 		private List<byte> _dataBytes = new List<byte>();
 		private const int _maxNumBytes = 116;
-		[SerializeField] private byte _autoUpdate;
+		[SerializeField] private byte _autoUpdate = 1;
 		private bool _updated;
 		private bool _started;
 		private bool _dirty;
@@ -203,7 +203,7 @@ namespace SmartMaker
 			_dirty = true;
 		}
 
-		public virtual string[] SketchExternalIncludes()
+		public virtual string[] SketchIncludes()
 		{
 			return null;
 		}
@@ -211,6 +211,14 @@ namespace SmartMaker
 		public virtual string SketchDeclaration()
 		{
 			return "";
+		}
+
+		public virtual string SketchVarName
+		{
+			get
+			{
+				return string.Format("noName{0:d}", id);
+			}
 		}
 
 		protected virtual void OnActionSetup()

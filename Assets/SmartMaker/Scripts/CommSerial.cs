@@ -13,6 +13,7 @@ namespace SmartMaker
 		[SerializeField]
 		public List<string> portNames = new List<string>();
 		public string portName;
+		public int baudrate;
 
 		private SerialPort _serialPort;
 
@@ -22,7 +23,6 @@ namespace SmartMaker
 			_serialPort.DtrEnable = true; // win32 hack to try to get DataReceived event to fire
 			_serialPort.RtsEnable = true;
 			_serialPort.DataBits = 8;
-			_serialPort.BaudRate = 115200;
 			_serialPort.Parity = Parity.None;
 			_serialPort.StopBits = StopBits.One;
 			_serialPort.ReadTimeout = 1; // since on windows we *cannot* have a separate read thread
@@ -41,6 +41,7 @@ namespace SmartMaker
 
 			try
 			{
+				_serialPort.BaudRate = baudrate;
 				_serialPort.Open();
 				if(_serialPort.IsOpen == true)
 				{
