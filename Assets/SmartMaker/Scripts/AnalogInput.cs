@@ -9,7 +9,7 @@ namespace SmartMaker
 	{
 		public int pin;
 		public int resolution = 1024;
-		
+
 		protected ushort _newValue;
 		protected ushort _value;
 
@@ -20,7 +20,6 @@ namespace SmartMaker
 		// Use this for initialization
 		void Start ()
 		{
-			
 		}
 		
 		// Update is called once per frame

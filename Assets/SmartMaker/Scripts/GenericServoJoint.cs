@@ -9,6 +9,7 @@ namespace SmartMaker
 		public GenericServo genericServo;
 		public Vector3 forward;
 		public Vector3 up;
+		public float drawScale = 1f;
 
 		private Quaternion _initRot;
 		private float _angle;
@@ -44,6 +45,38 @@ namespace SmartMaker
 
 			if(genericServo != null)
 				genericServo.angle = _angle;
+		}
+
+		void OnDrawGizmos()
+		{
+			if(Application.isPlaying == false)
+			{
+				Gizmos.color = Color.green;
+				Gizmos.DrawLine(transform.position, transform.position + (transform.rotation * up) * drawScale);
+
+				Gizmos.color = Color.blue;
+				Gizmos.DrawLine(transform.position, transform.position + (transform.rotation * forward) * drawScale);
+			}
+			else
+			{
+				Quaternion rot = Quaternion.identity;
+				if(transform.parent != null)
+					rot = transform.parent.rotation * _initRot;
+				else
+					rot = _initRot;
+
+				Gizmos.color = Color.green;
+				Gizmos.DrawLine(transform.position, transform.position + (rot * _up) * drawScale);
+				
+				Gizmos.color = Color.blue;
+				Gizmos.DrawLine(transform.position, transform.position + (rot * _forward) * drawScale);
+
+				if(_angle != 0f)
+				{
+					Gizmos.color = Color.yellow;
+					Gizmos.DrawLine(transform.position, transform.position + (rot * _preForward) * drawScale);
+				}
+			}
 		}
 
 		public void Reset()
