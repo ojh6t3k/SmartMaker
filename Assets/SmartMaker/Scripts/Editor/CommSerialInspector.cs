@@ -6,13 +6,21 @@ using SmartMaker;
 [CustomEditor(typeof(CommSerial))]
 public class CommSerialInspector : Editor
 {
+	bool foldout = true;
+
 	SerializedProperty portNames;
 	SerializedProperty portName;
+	SerializedProperty uiText;
+	SerializedProperty uiPanel;
+	SerializedProperty uiItem;
 
 	void OnEnable()
 	{
 		portNames = serializedObject.FindProperty("portNames");
 		portName = serializedObject.FindProperty("portName");
+		uiText = serializedObject.FindProperty("uiText");
+		uiPanel = serializedObject.FindProperty("uiPanel");
+		uiItem = serializedObject.FindProperty("uiItem");
 	}
 	
 	public override void OnInspectorGUI()
@@ -40,6 +48,16 @@ public class CommSerialInspector : Editor
 		if(GUILayout.Button("Search") == true)
 			serial.PortSearch();
 		EditorGUILayout.EndHorizontal();
+
+		foldout = EditorGUILayout.Foldout(foldout, "UI objects");
+		if(foldout == true)
+		{
+			EditorGUI.indentLevel++;
+			EditorGUILayout.PropertyField(uiText, new GUIContent("UI Text"));
+			EditorGUILayout.PropertyField(uiPanel, new GUIContent("UI Panel"));
+			EditorGUILayout.PropertyField(uiItem, new GUIContent("UI Item"));
+			EditorGUI.indentLevel--;
+		}
 
 		this.serializedObject.ApplyModifiedProperties();
 	}

@@ -47,9 +47,7 @@ namespace SmartMaker
 				commObject.OnOpened += CommOpenEventHandler;
 				commObject.OnOpenFailed += CommOpenFailEventHandler;
 				commObject.OnErrorClosed += CommErrorCloseEventHandler;
-			}
-			else
-			{
+
 				CommSerial serial = (CommSerial)commObject;
 				if(serial != null)
 					serial.baudrate = uartBaudrate;
