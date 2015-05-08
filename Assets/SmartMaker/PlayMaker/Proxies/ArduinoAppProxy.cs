@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Events;
 using HutongGames.PlayMaker;
 
-namespace SmartMaker
+namespace SmartMaker.PlayMaker
 {
 	[AddComponentMenu("SmartMaker/PlayMaker/ArduinoAppProxy")]
 	public class ArduinoAppProxy : MonoBehaviour

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEditor;
 using HutongGames.PlayMaker;
 using SmartMaker;
+using SmartMaker.PlayMaker;
 
 
 [CustomEditor(typeof(DigitalInputProxy))]

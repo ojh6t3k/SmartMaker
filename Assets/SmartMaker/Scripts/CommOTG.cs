@@ -8,22 +8,34 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Communication/CommOTG")]
 	public class CommOTG : CommObject
 	{
-#if UNITY_ANDROID && !UNITY_EDITOR
-		private AndroidJavaObject _activity;
+		private AndroidJavaObject _androidOTG;
+		private AndroidJavaObject _activityContext;
 		private bool _isOpen;
 
 		void Awake()
 		{
-			AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-			_activity = jc.GetStatic<AndroidJavaObject>("currentActivity");
 			_isOpen = false;
+
+			using(AndroidJavaClass activityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+			{
+				_activityContext = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
+			}
+
+			using(AndroidJavaClass pluginClass = new AndroidJavaClass("com.SmartMaker.Android.CommOTG"))
+			{
+				if(pluginClass != null)
+				{
+					_androidOTG = pluginClass.CallStatic<AndroidJavaObject>("instance");
+					_androidOTG.Call("SetContext", _activityContext);
+				}
+			}
 		}
 		
 		public override void Open()
 		{
-			if(_activity != null)
+			if(_androidOTG != null)
 			{
-				_isOpen = _activity.Call<bool>("OTG_Open");
+				_isOpen = _androidOTG.Call<bool>("open");
 			}
 
 			if(_isOpen == false)
@@ -35,18 +47,18 @@ namespace SmartMaker
 		
 		public override void Close()
 		{
-			if(_activity != null)
+			if(_androidOTG != null)
 			{
-				_activity.Call("OTG_Close");
+				_androidOTG.Call("close");
 				_isOpen = false;
 			}
 		}
 		
 		public override void Write(byte[] bytes)
 		{
-			if(_activity != null)
+			if(_androidOTG != null)
 			{
-				if(_activity.Call<bool>("OTG_Write", bytes) == false)
+				if(_androidOTG.Call<bool>("write", bytes) == false)
 				{
 					_isOpen = false;
 					if(OnErrorClosed != null)
@@ -62,9 +74,9 @@ namespace SmartMaker
 		
 		public override byte[] Read()
 		{
-			if(_activity != null)
+			if(_androidOTG != null)
 			{
-				return _activity.Call<byte[]>("OTG_Read");
+				return _androidOTG.Call<byte[]>("read");
 			}
 			else
 			{
@@ -81,37 +93,5 @@ namespace SmartMaker
 				return _isOpen;
 			}
 		}
-#else
-		public override void Open()
-		{
-			if(OnOpenFailed != null)
-				OnOpenFailed(this, null);
-		}
-		
-		public override void Close()
-		{
-		}
-		
-		public override void Write(byte[] bytes)
-		{
-			if(OnErrorClosed != null)
-				OnErrorClosed(this, null);
-		}
-		
-		public override byte[] Read()
-		{
-			if(OnErrorClosed != null)
-				OnErrorClosed(this, null);
-			return null;
-		}
-		
-		public override bool IsOpen
-		{
-			get
-			{
-				return false;
-			}
-		}
-#endif
 	}
 }

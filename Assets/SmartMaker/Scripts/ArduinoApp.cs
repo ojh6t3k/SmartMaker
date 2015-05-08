@@ -262,7 +262,17 @@ namespace SmartMaker
 		{
 			get
 			{
-				return GameObject.FindObjectsOfType<AppAction>();
+				List<AppAction> listActions = new List<AppAction>(GameObject.FindObjectsOfType<AppAction>());
+				for(int i=0; i<listActions.Count; i++)
+				{
+					if(listActions[i].enabled == false)
+					{
+						listActions.RemoveAt(i);
+						i--;
+					}
+				}
+
+				return listActions.ToArray();
 			}
 		}
 

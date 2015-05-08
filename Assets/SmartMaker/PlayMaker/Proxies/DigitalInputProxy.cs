@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Events;
 using HutongGames.PlayMaker;
 
-namespace SmartMaker
+namespace SmartMaker.PlayMaker
 {
 	[AddComponentMenu("SmartMaker/PlayMaker/DigitalInputProxy")]
 	public class DigitalInputProxy : MonoBehaviour

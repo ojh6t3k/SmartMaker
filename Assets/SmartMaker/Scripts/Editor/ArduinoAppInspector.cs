@@ -96,16 +96,7 @@ public class ArduinoAppInspector : Editor
 			return;
 
 		ArduinoApp arduino = (ArduinoApp)target;
-		List<AppAction> listActions = new List<AppAction>(arduino.appActions);
-		for(int i=0; i<listActions.Count; i++)
-		{
-			if(listActions[i].enabled == false)
-			{
-				listActions.RemoveAt(i);
-				i--;
-			}
-		}
-		AppAction[] actions = listActions.ToArray();
+		AppAction[] actions = arduino.appActions;
 		StringBuilder source = new StringBuilder();
 
 		// Check id duplications
