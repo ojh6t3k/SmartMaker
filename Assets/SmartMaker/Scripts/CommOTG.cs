@@ -8,6 +8,7 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Communication/CommOTG")]
 	public class CommOTG : CommObject
 	{
+#if UNITY_ANDROID
 		private AndroidJavaObject _androidOTG;
 		private AndroidJavaObject _activityContext;
 		private bool _isOpen;
@@ -21,7 +22,7 @@ namespace SmartMaker
 				_activityContext = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
 			}
 
-			using(AndroidJavaClass pluginClass = new AndroidJavaClass("com.SmartMaker.Android.CommOTG"))
+			using(AndroidJavaClass pluginClass = new AndroidJavaClass("com.smartmaker.android.CommOTG"))
 			{
 				if(pluginClass != null)
 				{
@@ -93,5 +94,8 @@ namespace SmartMaker
 				return _isOpen;
 			}
 		}
+#else
+		
+#endif
 	}
 }

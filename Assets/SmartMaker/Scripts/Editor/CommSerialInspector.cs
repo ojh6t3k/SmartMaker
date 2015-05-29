@@ -25,6 +25,9 @@ public class CommSerialInspector : Editor
 	
 	public override void OnInspectorGUI()
 	{
+#if !UNITY_STANDALONE
+		EditorGUILayout.HelpBox("This component only can work on standalone platform(windows, osx, linux..)", MessageType.Error);
+#endif
 		this.serializedObject.Update();
 
 		CommSerial serial = (CommSerial)target;

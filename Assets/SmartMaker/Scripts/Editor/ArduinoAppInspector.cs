@@ -174,7 +174,16 @@ public class ArduinoAppInspector : Editor
 			CopyLibrary("UnityApp", srcPath, path);
 			CopyLibrary("AppAction", srcPath, path);
 			foreach(Type type in types)
+			{
 				CopyLibrary(type.Name, srcPath, path);
+				string subPath = Path.Combine(srcPath, type.Name);
+				if(Directory.Exists(subPath) == true)
+				{
+					string[] subFiles = Directory.GetFiles(subPath);
+					foreach(string subFile in subFiles)
+						File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+				}
+			}
 		}
 		catch(Exception)
 		{

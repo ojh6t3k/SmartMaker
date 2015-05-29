@@ -2,7 +2,7 @@ Smart Maker for Unity3D
 
 [Release]
 -Version: v1.0.0b2
--Date: ?/?/2015
+-Date: 6/1/2015
 
 
 [What's purpose]
@@ -16,6 +16,7 @@ Coming soon...
 [Independency]
 -Unity3D 5.x higher
 -PlayMaker (Option)
+-PlayMaker for uGui (Require for PlayMaker)
 
 
 [Cautions]
