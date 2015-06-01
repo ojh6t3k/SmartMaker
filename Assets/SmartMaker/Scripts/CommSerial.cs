@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.IO;
-using System.IO.Ports;
 using UnityEngine.UI;
+#if UNITY_STANDALONE
+using System.IO.Ports;
+#endif
+
 
 namespace SmartMaker
 {
