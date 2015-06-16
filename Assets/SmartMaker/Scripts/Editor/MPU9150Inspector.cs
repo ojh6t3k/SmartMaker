@@ -41,6 +41,9 @@ public class MPU9150Inspector : Editor
 
 		if(Application.isPlaying == true)
 		{
+			GUI.enabled = false;
+			EditorGUILayout.Vector3Field("Angle", imu.Rotation.eulerAngles);
+			GUI.enabled = true;
 			if(GUILayout.Button("Calibration") == true)
 				imu.Calibration();
 		}

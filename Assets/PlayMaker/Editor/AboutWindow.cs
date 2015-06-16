@@ -48,10 +48,7 @@ namespace HutongGames.PlayMakerEditor
             GUILayout.Space(10);
             GUILayout.Label("© Hutong Games LLC. All Rights Reserved.", EditorStyles.miniLabel);
 
-            GUILayout.Label(!EditorApp.IsSourceCodeVersion
-                ? string.Format("Version 1.7.8.2")
-                : "Source Code Version");
-
+            GUILayout.Label("Version 1.7.8.3");
             if (VersionInfo.PlayMakerVersionInfo != "")
             {
                 EditorGUILayout.HelpBox(VersionInfo.PlayMakerVersionInfo, MessageType.None);

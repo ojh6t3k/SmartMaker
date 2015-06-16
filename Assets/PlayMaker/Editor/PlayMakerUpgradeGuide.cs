@@ -12,7 +12,7 @@ namespace HutongGames.PlayMakerEditor
     {
         private const string urlReleaseNotes = "https://hutonggames.fogbugz.com/default.asp?W311";
 
-        private bool showOnLoad;
+        private static bool showOnLoad;
         private Vector2 scrollPosition;
 
         static PlayMakerUpgradeGuide()
@@ -34,15 +34,9 @@ namespace HutongGames.PlayMakerEditor
 
         public static void Open()
         {
-            GetWindow<PlayMakerUpgradeGuide>(true);
-        }
-
-        public void OnEnable()
-        {
-            title = "PlayMaker";
-            position = new Rect(100,100,350,400);
-            minSize = new Vector2(350,200);
-
+            var window = GetWindow<PlayMakerUpgradeGuide>(true);
+            window.title = "PlayMaker"; 
+            window.minSize = new Vector2(350, 400);
             showOnLoad = EditorPrefs.GetBool("Playmaker.ShowUpgradeGuide", true);
         }
 
@@ -64,6 +58,7 @@ namespace HutongGames.PlayMakerEditor
                                     "\nNew features and bug fixes coming soon in 1.8.0", MessageType.Info);
 
             GUILayout.Label("Unity 5 Upgrade Notes", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("If you're updating a Unity 4.x project please check the Troubleshooting guide on the PlayMaker Wiki.", MessageType.Warning);
             EditorGUILayout.HelpBox("Unity 5 removed component property shortcuts from GameObject. " +
                                     "\n\nThe Unity auto update process replaces these properties with GetComponent calls. " +
                                     "In many cases this is fine, but some third party actions and addons might need manual updating! " +
