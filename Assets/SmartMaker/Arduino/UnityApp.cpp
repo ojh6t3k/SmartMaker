@@ -20,7 +20,7 @@ extern "C" {
 //* Constructors
 //******************************************************************************
 
-UnityAppClass::UnityAppClass(HardwareSerial* s) : UnityAppSerial(s)
+UnityAppClass::UnityAppClass()
 {
 	firstAction = 0;
 }
@@ -29,14 +29,15 @@ UnityAppClass::UnityAppClass(HardwareSerial* s) : UnityAppSerial(s)
 //* Public Methods
 //******************************************************************************
 
-void UnityAppClass::attachSerial(HardwareSerial* s)
-{
-	UnityAppSerial = s;
-}
-
 void UnityAppClass::begin(long speed)
 {
-	UnityAppSerial->begin(speed);
+	Serial.begin(speed);
+	begin(Serial);
+}
+
+void UnityAppClass::begin(Stream &s)
+{
+	UnityAppSerial = &s;
 	readyReceived = false;
 	processUpdate = 0;
 	Reset();
@@ -378,6 +379,6 @@ void UnityAppClass::Reset(void)
 }
 
 
-UnityAppClass UnityApp(&Serial);
+UnityAppClass UnityApp;
 
 

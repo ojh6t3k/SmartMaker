@@ -22,11 +22,11 @@
 class UnityAppClass
 {
 public:
-	UnityAppClass(HardwareSerial *s);
+	UnityAppClass();
 
 	// for application
-	void attachSerial(HardwareSerial *s);
 	void begin(long speed);
+	void begin(Stream &s);
     void process(void);
     void attachAction(AppAction* action);
 	void detachAction(AppAction* action);
@@ -44,7 +44,7 @@ public:
 	boolean pop(byte* value, byte count);
 
 private:
-    HardwareSerial* UnityAppSerial;
+    Stream* UnityAppSerial;
 	AppAction* firstAction;
 
 	boolean readyReceived;

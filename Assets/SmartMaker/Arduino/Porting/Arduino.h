@@ -27,17 +27,24 @@ void pinMode(int, int);
 int digitalRead(int);
 unsigned long millis(void);
 
+class Stream
+{
+  private:
 
-class HardwareSerial
+  public:
+    Stream();
+    int available(void);
+    byte read(void);
+    void write(int);
+}
+
+class HardwareSerial : public Stream
 {
   private:
 
   public:
     HardwareSerial();
     void begin(unsigned long);
-    int available(void);
-    byte read(void);
-    void write(int);
 };
 extern HardwareSerial Serial;
 

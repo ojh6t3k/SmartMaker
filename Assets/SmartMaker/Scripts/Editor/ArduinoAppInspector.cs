@@ -149,9 +149,15 @@ public class ArduinoAppInspector : Editor
 		source.AppendLine("{");
 		foreach(AppAction action in actions)
 			source.AppendLine(string.Format("  UnityApp.attachAction((AppAction*)&{0});", action.SketchVarName));
-		if(arduino.uartNum > 0)
-			source.AppendLine(string.Format("  UnityApp.attachSerial(&Serial{0:d});", arduino.uartNum));
-		source.AppendLine(string.Format("  UnityApp.begin({0:d});", arduino.uartBaudrate));
+		if(arduino.uartNum == 0)
+		{
+			source.AppendLine(string.Format("  UnityApp.begin({0:d});", arduino.uartBaudrate));
+		}
+		else
+		{
+			source.AppendLine(string.Format("  Serial{0:d}.begin({1:d});", arduino.uartNum, arduino.uartBaudrate));
+			source.AppendLine(string.Format("  UnityApp.begin(Serial{0:d});", arduino.uartNum));
+		}
 		source.AppendLine("}");
 		source.AppendLine();
 
