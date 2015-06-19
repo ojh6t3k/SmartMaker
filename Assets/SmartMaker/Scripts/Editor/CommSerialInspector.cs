@@ -7,17 +7,24 @@ using SmartMaker;
 public class CommSerialInspector : Editor
 {
 	bool foldout = true;
+	bool foldout2 = true;
 
+	SerializedProperty owner;
 	SerializedProperty portNames;
 	SerializedProperty portName;
+	SerializedProperty baudrate;
+	SerializedProperty streamClass;
 	SerializedProperty uiText;
 	SerializedProperty uiPanel;
 	SerializedProperty uiItem;
 
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		portNames = serializedObject.FindProperty("portNames");
 		portName = serializedObject.FindProperty("portName");
+		baudrate = serializedObject.FindProperty("baudrate");
+		streamClass = serializedObject.FindProperty("streamClass");
 		uiText = serializedObject.FindProperty("uiText");
 		uiPanel = serializedObject.FindProperty("uiPanel");
 		uiItem = serializedObject.FindProperty("uiItem");
@@ -31,6 +38,8 @@ public class CommSerialInspector : Editor
 		this.serializedObject.Update();
 
 		CommSerial serial = (CommSerial)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 
 		GUI.enabled = !serial.IsOpen;
 
@@ -51,6 +60,18 @@ public class CommSerialInspector : Editor
 		if(GUILayout.Button("Search") == true)
 			serial.PortSearch();
 		EditorGUILayout.EndHorizontal();
+
+		if(Application.isPlaying == false)
+		{
+			foldout2 = EditorGUILayout.Foldout(foldout2, "Sketch Options");
+			if(foldout2 == true)
+			{
+				EditorGUI.indentLevel++;
+				EditorGUILayout.PropertyField(streamClass, new GUIContent("Stream Class"));
+				EditorGUILayout.PropertyField(baudrate, new GUIContent("Baudrate"));
+				EditorGUI.indentLevel--;
+			}
+		}
 
 		foldout = EditorGUILayout.Foldout(foldout, "UI objects");
 		if(foldout == true)

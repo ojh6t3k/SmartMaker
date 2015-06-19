@@ -8,6 +8,7 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Internal/CommObject")]
 	public class CommObject : MonoBehaviour
 	{
+		public ArduinoApp owner;
 		public EventHandler OnOpened;
 		public EventHandler OnOpenFailed;
 		public EventHandler OnErrorClosed;
@@ -35,6 +36,26 @@ namespace SmartMaker
 			{
 				return false;
 			}
+		}
+
+		public virtual string[] SketchIncludes()
+		{
+			return null;
+		}
+		
+		public virtual string SketchDeclaration()
+		{
+			return "";
+		}
+
+		public virtual string SketchSetup()
+		{
+			return "";
+		}
+
+		public virtual string SketchLoop()
+		{
+			return "";
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Internal/AppAction")]
 	public class AppAction : MonoBehaviour
 	{
+		public ArduinoApp owner;
 		public int id;
 
 		public UnityEvent OnStarted;

@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 
 namespace SmartMaker
 {
-	[AddComponentMenu("SmartMaker/Communication/CommTCP")]
-	public class CommTCP : CommObject
+	[AddComponentMenu("SmartMaker/Communication/CommBridge")]
+	public class CommBridge : CommObject
 	{
-		public string ipAddress;
-		public int port;
-		public bool localHost;
+		public string ipAddress = "192.168.240.1"; // Arduino Yun default IP
+		public int port = 5555; // Arduino Yun Bridge Port
 
 		private Socket _socket;
 
@@ -30,10 +30,7 @@ namespace SmartMaker
 			try
 			{
 				SocketAsyncEventArgs e = new SocketAsyncEventArgs();
-				if(localHost == false)
-					e.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
-				else
-					e.RemoteEndPoint = new IPEndPoint(Dns.GetHostEntry("localhost").AddressList[0], port);
+				e.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
 				e.UserToken = _socket;			
 				e.Completed += new EventHandler<SocketAsyncEventArgs>(ConnectCompleted);
 				_socket.ConnectAsync(e);
@@ -119,6 +116,54 @@ namespace SmartMaker
 				if(OnOpenFailed != null)
 					OnOpenFailed(this, null);
 			}
+		}
+
+		public override string[] SketchIncludes ()
+		{
+			List<string> includes = new List<string>();
+			includes.Add("#include <Bridge.h>");
+			includes.Add("#include <YunServer.h>");
+			includes.Add("#include <YunClient.h>");
+			return includes.ToArray();
+		}
+
+		public override string SketchDeclaration ()
+		{
+			StringBuilder source = new StringBuilder();
+			
+			source.AppendLine("YunServer server;");
+
+			return source.ToString();
+		}
+
+		public override string SketchSetup ()
+		{
+			StringBuilder source = new StringBuilder();
+
+			source.AppendLine("  Bridge.begin();");
+			source.AppendLine("  server.noListenOnLocalhost();");
+			source.AppendLine("  server.begin();");
+			source.AppendLine("  UnityApp.begin();");
+
+			return source.ToString();
+		}
+
+		public override string SketchLoop ()
+		{
+			StringBuilder source = new StringBuilder();
+			
+			source.AppendLine("  YunClient client = server.accept();");
+			source.AppendLine("");
+			source.AppendLine("  if(client)");
+			source.AppendLine("  {");
+			source.AppendLine("    while(client.connected())");
+			source.AppendLine("      UnityApp.process((Stream*)&client);");
+			source.AppendLine("    client.stop();");
+			source.AppendLine("  }");
+			source.AppendLine("  else");
+			source.AppendLine("    UnityApp.process();");
+
+			return source.ToString();
 		}
 	}
 }

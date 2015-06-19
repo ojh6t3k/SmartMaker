@@ -8,6 +8,8 @@ using SmartMaker;
 public class GenericServoInspector : Editor
 {
 	bool foldout = true;
+
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty offsetAngle;
@@ -16,6 +18,7 @@ public class GenericServoInspector : Editor
 	
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		offsetAngle = serializedObject.FindProperty("offsetAngle");
@@ -28,6 +31,8 @@ public class GenericServoInspector : Editor
 		this.serializedObject.Update();
 		
 		GenericServo servo = (GenericServo)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 		
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)

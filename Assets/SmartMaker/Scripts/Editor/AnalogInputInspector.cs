@@ -8,6 +8,8 @@ using SmartMaker;
 public class AnalogInputInspector : Editor
 {
 	bool foldout = true;
+
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty resolution;
@@ -17,6 +19,7 @@ public class AnalogInputInspector : Editor
 	
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		resolution = serializedObject.FindProperty("resolution");
@@ -30,6 +33,8 @@ public class AnalogInputInspector : Editor
 		this.serializedObject.Update();
 		
 		AnalogInput aInput = (AnalogInput)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 		
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)

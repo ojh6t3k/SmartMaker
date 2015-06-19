@@ -25,9 +25,11 @@ public:
 	UnityAppClass();
 
 	// for application
+	void begin();
 	void begin(long speed);
-	void begin(Stream &s);
+	void begin(Stream *s);
     void process(void);
+	void process(Stream *s);
     void attachAction(AppAction* action);
 	void detachAction(AppAction* action);
 

@@ -21,7 +21,7 @@ extern "C" {
 //******************************************************************************
 
 UnityAppClass::UnityAppClass()
-{
+{	
 	firstAction = 0;
 }
 
@@ -29,162 +29,181 @@ UnityAppClass::UnityAppClass()
 //* Public Methods
 //******************************************************************************
 
-void UnityAppClass::begin(long speed)
+void UnityAppClass::begin()
 {
-	Serial.begin(speed);
-	begin(Serial);
-}
-
-void UnityAppClass::begin(Stream &s)
-{
-	UnityAppSerial = &s;
+	UnityAppSerial = 0;
 	readyReceived = false;
 	processUpdate = 0;
 	Reset();
 }
 
+void UnityAppClass::begin(long speed)
+{
+	begin();
+	Serial.begin(speed);
+	UnityAppSerial = (Stream*)&Serial;	
+}
+
+void UnityAppClass::begin(Stream *s)
+{
+	begin();
+	UnityAppSerial = s;	
+}
+
 void UnityAppClass::process(void)
 {
+	process(UnityAppSerial);
+}
+
+void UnityAppClass::process(Stream *s)
+{
 	AppAction* action;
+	Stream *backup = UnityAppSerial;
+	UnityAppSerial = s;
 
-	while(UnityAppSerial->available() > 0)
+	if(UnityAppSerial != 0)
 	{
-		byte bit = 1;
-		int inputData = UnityAppSerial->read(); // this is 'int' to handle -1 when no data	
-
-		if(inputData >= 0)
+		while(UnityAppSerial->available() > 0)
 		{
-			if(inputData & 0x80)
+			byte bit = 1;
+			int inputData = UnityAppSerial->read(); // this is 'int' to handle -1 when no data	
+
+			if(inputData >= 0)
 			{
-				if(inputData == CMD_PING)
+				if(inputData & 0x80)
 				{
-					UnityAppSerial->write(CMD_PING);				
-				}
-				else if(inputData == CMD_START)
-				{
-					action = firstAction;
-					while(action != 0)
+					if(inputData == CMD_PING)
 					{
-						action->start();
-						action = action->nextAction;
+						UnityAppSerial->write(CMD_PING);				
 					}
-					
-					UnityAppSerial->write(CMD_READY);
-				}
-				else if(inputData == CMD_EXIT)
-				{
-					action = firstAction;
-					while(action != 0)
-					{
-						action->stop();
-						action = action->nextAction;
-					}					
-				}
-				else if(inputData == CMD_READY)
-				{
-					readyReceived = true;
-				}
-				else if(inputData == CMD_ACTION)
-				{
-					if(processUpdate > 0)
+					else if(inputData == CMD_START)
 					{
 						action = firstAction;
 						while(action != 0)
 						{
-							action->excute();
+							action->start();
 							action = action->nextAction;
 						}
-						
+					
 						UnityAppSerial->write(CMD_READY);
-						processUpdate = 0;
+					}
+					else if(inputData == CMD_EXIT)
+					{
+						action = firstAction;
+						while(action != 0)
+						{
+							action->stop();
+							action = action->nextAction;
+						}					
+					}
+					else if(inputData == CMD_READY)
+					{
+						readyReceived = true;
+					}
+					else if(inputData == CMD_ACTION)
+					{
+						if(processUpdate > 0)
+						{
+							action = firstAction;
+							while(action != 0)
+							{
+								action->excute();
+								action = action->nextAction;
+							}
+						
+							UnityAppSerial->write(CMD_READY);
+							processUpdate = 0;
+						}
+					}
+			
+					if(inputData == CMD_UPDATE)
+						processUpdate = 1;
+					else
+						Reset();
+				}
+				else if(processUpdate > 0)
+				{
+					if(processUpdate == 1)
+					{
+						ID = inputData;
+						processUpdate = 2;
+					}
+					else if(processUpdate == 2)
+					{
+						numData = inputData;
+						if(numData > MAX_ARGUMENT_BYTES)
+							Reset();
+						else
+						{
+							processUpdate = 3;
+							currentNumData = 0;
+						}
+					}
+					else if(processUpdate == 3)
+					{
+						if(currentNumData < numData)
+							storedData[currentNumData++] = inputData;
+
+						if(currentNumData >= numData)
+						{
+							// Decoding 7bit bytes
+							numData = 0;
+							for(int i=0; i<currentNumData; i++)
+							{
+								if(bit == 1)
+								{
+									storedData[numData] = storedData[i] << bit;
+									bit++;
+								}
+								else if(bit == 8)
+								{
+									storedData[numData] |= storedData[i];
+									bit = 1;
+								}
+								else
+								{
+									storedData[numData++] |= storedData[i] >> (7 - bit + 1);
+									storedData[numData] = storedData[i] << bit;
+									bit++;
+								}
+							}
+
+							currentNumData = 0;
+						
+							action = firstAction;
+							while(action != 0)
+							{
+								if(action->update(ID) == true)
+									break;
+								action = action->nextAction;
+							}
+						
+							processUpdate = 1;
+						}
 					}
 				}
-			
-				if(inputData == CMD_UPDATE)
-					processUpdate = 1;
 				else
 					Reset();
 			}
-			else if(processUpdate > 0)
-			{
-				if(processUpdate == 1)
-				{
-					ID = inputData;
-					processUpdate = 2;
-				}
-				else if(processUpdate == 2)
-				{
-					numData = inputData;
-					if(numData > MAX_ARGUMENT_BYTES)
-						Reset();
-					else
-					{
-						processUpdate = 3;
-						currentNumData = 0;
-					}
-				}
-				else if(processUpdate == 3)
-				{
-					if(currentNumData < numData)
-						storedData[currentNumData++] = inputData;
-
-					if(currentNumData >= numData)
-					{
-						// Decoding 7bit bytes
-						numData = 0;
-						for(int i=0; i<currentNumData; i++)
-						{
-							if(bit == 1)
-							{
-								storedData[numData] = storedData[i] << bit;
-								bit++;
-							}
-							else if(bit == 8)
-							{
-								storedData[numData] |= storedData[i];
-								bit = 1;
-							}
-							else
-							{
-								storedData[numData++] |= storedData[i] >> (7 - bit + 1);
-								storedData[numData] = storedData[i] << bit;
-								bit++;
-							}
-						}
-
-						currentNumData = 0;
-						
-						action = firstAction;
-						while(action != 0)
-						{
-							if(action->update(ID) == true)
-								break;
-							action = action->nextAction;
-						}
-						
-						processUpdate = 1;
-					}
-				}
-			}
-			else
-				Reset();
 		}
-	}
 
-	if(readyReceived == true)
-	{
-		UnityAppSerial->write(CMD_UPDATE);
-		
-		action = firstAction;
-		while(action != 0)
+		if(readyReceived == true)
 		{
-			action->flush();				
-			action = action->nextAction;
-		}
+			UnityAppSerial->write(CMD_UPDATE);
+		
+			action = firstAction;
+			while(action != 0)
+			{
+				action->flush();				
+				action = action->nextAction;
+			}
 
-		UnityAppSerial->write(CMD_ACTION);
-		readyReceived = false;
+			UnityAppSerial->write(CMD_ACTION);
+			readyReceived = false;
+		}
 	}
+
+	UnityAppSerial = backup;
 
 	action = firstAction;
 	while(action != 0)

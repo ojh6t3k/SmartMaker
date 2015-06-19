@@ -8,8 +8,10 @@ using SmartMaker;
 public class GenericToneInspector : Editor
 {
 	bool foldout = true;
+
 	ToneFrequency toneFrequency = ToneFrequency.MUTE;
 
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty OnStarted;
@@ -17,6 +19,7 @@ public class GenericToneInspector : Editor
 
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		OnStarted = serializedObject.FindProperty("OnStarted");
@@ -28,6 +31,8 @@ public class GenericToneInspector : Editor
 		this.serializedObject.Update();
 		
 		GenericTone tone = (GenericTone)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 		
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)

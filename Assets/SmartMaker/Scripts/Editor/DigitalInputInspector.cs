@@ -8,6 +8,8 @@ using SmartMaker;
 public class DigitalInputInspector : Editor
 {
 	bool foldout = true;
+
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty pullup;
@@ -18,6 +20,7 @@ public class DigitalInputInspector : Editor
 	
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		pullup = serializedObject.FindProperty("pullup");
@@ -32,6 +35,8 @@ public class DigitalInputInspector : Editor
 		this.serializedObject.Update();
 		
 		DigitalInput dInput = (DigitalInput)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 		
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)

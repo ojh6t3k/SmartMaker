@@ -10,10 +10,7 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/ArduinoApp")]
 	public class ArduinoApp : MonoBehaviour
 	{
-		public CommObject commObject;
 		public float timeoutSec = 5f;
-		public int uartNum = 0;
-		public int uartBaudrate = 115200;
 
 		public UnityEvent OnConnected;
 		public UnityEvent OnConnectionFailed;
@@ -29,6 +26,7 @@ namespace SmartMaker
 			Ping = 0x85 //133
 		}
 
+		private CommObject _commObject;
 		private AppAction[] _actions;
 		private bool _opened = false;
 		private bool _connected = false;
@@ -42,21 +40,19 @@ namespace SmartMaker
 
 		void Awake()
 		{
-			if(commObject != null)
-			{
-				commObject.OnOpened += CommOpenEventHandler;
-				commObject.OnOpenFailed += CommOpenFailEventHandler;
-				commObject.OnErrorClosed += CommErrorCloseEventHandler;
-
-				CommSerial serial = (CommSerial)commObject;
-				if(serial != null)
-					serial.baudrate = uartBaudrate;
-			}
 		}
 
 		// Use this for initialization
 		void Start ()
 		{
+			_commObject = commObject;
+			if(_commObject != null)
+			{
+				commObject.OnOpened += CommOpenEventHandler;
+				commObject.OnOpenFailed += CommOpenFailEventHandler;
+				commObject.OnErrorClosed += CommErrorCloseEventHandler;
+			}
+
 			_actions = appActions;
 			foreach(AppAction action in _actions)
 				action.ActionSetup();
@@ -68,7 +64,7 @@ namespace SmartMaker
 			if(_opened == true)
 			{
 				// Process RX
-				byte[] readBytes = commObject.Read();
+				byte[] readBytes = _commObject.Read();
 				bool update = false;
 				if(readBytes != null)
 				{
@@ -78,7 +74,7 @@ namespace SmartMaker
 						{
 							if(readBytes[i] == (byte)CMD.Ping)
 							{
-								commObject.Write(new byte[] { (byte)CMD.Start, (byte)CMD.Ready });
+								_commObject.Write(new byte[] { (byte)CMD.Start, (byte)CMD.Ready });
 								foreach(AppAction action in _actions)
 									action.ActionStart();
 								
@@ -181,7 +177,7 @@ namespace SmartMaker
 					
 					if(update == true)
 					{
-						commObject.Write(new byte[] { (byte)CMD.Ready });
+						_commObject.Write(new byte[] { (byte)CMD.Ready });
 					}
 				}
 				
@@ -229,10 +225,10 @@ namespace SmartMaker
 						{
 							writeBytes.Insert(0, (byte)CMD.Update); // Update
 							writeBytes.Add((byte)CMD.Action); // Action
-							commObject.Write (writeBytes.ToArray());
+							_commObject.Write (writeBytes.ToArray());
 						}
 						else
-							commObject.Write(new byte[] { (byte)CMD.Update, (byte)CMD.Action });
+							_commObject.Write(new byte[] { (byte)CMD.Update, (byte)CMD.Action });
 						
 						_processProtocolTx = false;
 					}
@@ -243,9 +239,9 @@ namespace SmartMaker
 				{
 					_time = 0;
 					if(_connected == false)
-						commObject.Write(new byte[] { (byte)CMD.Ping });
+						_commObject.Write(new byte[] { (byte)CMD.Ping });
 					else
-						commObject.Write(new byte[] { (byte)CMD.Ready, (byte)CMD.Update, (byte)CMD.Action });
+						_commObject.Write(new byte[] { (byte)CMD.Ready, (byte)CMD.Update, (byte)CMD.Action });
 				}
 				else
 					_time += Time.deltaTime;
@@ -258,6 +254,38 @@ namespace SmartMaker
 			}
 		}
 
+		public CommObject commObject
+		{
+			get
+			{
+				if( _commObject != null)
+					return _commObject;
+
+				List<CommObject> listComms = new List<CommObject>(GameObject.FindObjectsOfType<CommObject>());
+				for(int i=0; i<listComms.Count; i++)
+				{
+					if(listComms[i].owner == null)
+					{
+						listComms.RemoveAt(i);
+						i--;
+					}
+					else
+					{
+						if(listComms[i].enabled == false || listComms[i].owner.Equals(this) == false)
+						{
+							listComms.RemoveAt(i);
+							i--;
+						}
+					}
+				}
+
+				if(listComms.Count > 0)
+					return listComms[0];
+
+				return null;
+			}
+		}
+
 		public AppAction[] appActions
 		{
 			get
@@ -265,7 +293,7 @@ namespace SmartMaker
 				List<AppAction> listActions = new List<AppAction>(GameObject.FindObjectsOfType<AppAction>());
 				for(int i=0; i<listActions.Count; i++)
 				{
-					if(listActions[i].enabled == false)
+					if(listActions[i].enabled == false || listActions[i].owner.Equals(this) == false)
 					{
 						listActions.RemoveAt(i);
 						i--;
@@ -286,10 +314,10 @@ namespace SmartMaker
 
 		public void Connect()
 		{
-			if(commObject == null)
+			if(_commObject == null)
 				return;
 
-			commObject.Open();
+			_commObject.Open();
 		}
 
 		private void ErrorDisconnect()
@@ -298,7 +326,7 @@ namespace SmartMaker
 			_connected = false;
 			_opened = false;
 			
-			commObject.Close();
+			_commObject.Close();
 
 			foreach(AppAction action in _actions)
 				action.ActionStop();
@@ -317,16 +345,16 @@ namespace SmartMaker
 
 		public void Disconnect()
 		{
-			if(commObject == null)
+			if(_commObject == null)
 				return;
 
 			if(_connected == true)
-				commObject.Write(new byte[] { (byte)CMD.Exit });
+				_commObject.Write(new byte[] { (byte)CMD.Exit });
 
 			_connected = false;
 			_opened = false;
 
-			commObject.Close();
+			_commObject.Close();
 
 			foreach(AppAction action in _actions)
 				action.ActionStop();
@@ -344,7 +372,7 @@ namespace SmartMaker
 		{
 			_opened = true;
 			TimeoutReset();
-			commObject.Write(new byte[] { (byte)CMD.Ping });
+			_commObject.Write(new byte[] { (byte)CMD.Ping });
 		}
 
 		private void CommOpenFailEventHandler(object sender, EventArgs e)

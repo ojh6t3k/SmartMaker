@@ -8,6 +8,8 @@ using SmartMaker;
 public class DigitalOutputInspector : Editor
 {
 	bool foldout = true;
+
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty pin;
 	SerializedProperty OnStarted;
@@ -15,6 +17,7 @@ public class DigitalOutputInspector : Editor
 
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		pin = serializedObject.FindProperty("pin");
 		OnStarted = serializedObject.FindProperty("OnStarted");
@@ -26,6 +29,8 @@ public class DigitalOutputInspector : Editor
 		this.serializedObject.Update();
 		
 		DigitalOutput dOut = (DigitalOutput)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)

@@ -8,15 +8,20 @@ using SmartMaker;
 public class MPU9150Inspector : Editor
 {
 	bool foldout = true;
+
+	SerializedProperty owner;
 	SerializedProperty id;
 	SerializedProperty targetObject;
+	SerializedProperty smoothFollow;
 	SerializedProperty offsetAngles;
 	SerializedProperty OnCalibrated;
 
 	void OnEnable()
 	{
+		owner = serializedObject.FindProperty("owner");
 		id = serializedObject.FindProperty("id");
 		targetObject = serializedObject.FindProperty("target");
+		smoothFollow = serializedObject.FindProperty("smoothFollow");
 		offsetAngles = serializedObject.FindProperty("offsetAngles");
 		OnCalibrated = serializedObject.FindProperty("OnCalibrated");
 	}
@@ -26,6 +31,8 @@ public class MPU9150Inspector : Editor
 		this.serializedObject.Update();
 
 		MPU9150 imu = (MPU9150)target;
+
+		EditorGUILayout.PropertyField(owner, new GUIContent("Owner"));
 
 		foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
 		if(foldout == true)
@@ -37,6 +44,7 @@ public class MPU9150Inspector : Editor
 
 		EditorGUILayout.Separator();
 		EditorGUILayout.PropertyField(targetObject, new GUIContent("Target"));
+		EditorGUILayout.PropertyField(smoothFollow, new GUIContent("Smooth Follow"));
 		EditorGUILayout.PropertyField(offsetAngles, new GUIContent("Offset"));
 
 		if(Application.isPlaying == true)

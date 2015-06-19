@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Text;
 using UnityEngine.UI;
 #if UNITY_STANDALONE
 using System.IO.Ports;
@@ -14,16 +15,17 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Communication/CommSerial")]
 	public class CommSerial : CommObject
 	{
-#if UNITY_STANDALONE
 		[SerializeField]
 		public List<string> portNames = new List<string>();
 		public string portName;
-		public int baudrate;
-
+		public int baudrate = 115200;
+		public string streamClass = "Serial";
+		
 		public Text uiText;
 		public RectTransform uiPanel;
 		public GameObject uiItem;
 
+#if UNITY_STANDALONE
 		private SerialPort _serialPort;
 
 		void Awake()
@@ -182,15 +184,6 @@ namespace SmartMaker
 				uiText.text = portName;
 		}
 #else
-		[SerializeField]
-		public List<string> portNames = new List<string>();
-		public string portName;
-		public int baudrate;
-		
-		public Text uiText;
-		public RectTransform uiPanel;
-		public GameObject uiItem;
-
 		void Awake()
 		{
 			if(uiText != null)
@@ -248,5 +241,27 @@ namespace SmartMaker
 				uiText.text = portName;
 		}
 #endif
+
+		public override string SketchSetup ()
+		{
+			StringBuilder source = new StringBuilder();
+
+			if(streamClass.Equals("Serial") == true || streamClass.Equals("Serial0") == true)
+			{
+				source.AppendLine(string.Format("  UnityApp.begin({0:d});", baudrate));
+			}
+			else
+			{
+				source.AppendLine(string.Format("  {0}.begin({1:d});", streamClass, baudrate));
+				source.AppendLine(string.Format("  UnityApp.begin((Stream*)&{0});", streamClass));
+			}
+
+			return source.ToString();
+		}
+
+		public override string SketchLoop ()
+		{
+			return "  UnityApp.process();";
+		}
 	}
 }

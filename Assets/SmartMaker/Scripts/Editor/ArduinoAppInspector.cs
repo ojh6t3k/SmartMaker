@@ -13,20 +13,14 @@ public class ArduinoAppInspector : Editor
 {
 	bool foldout = true;
 
-	SerializedProperty commObject;
 	SerializedProperty timeoutSec;
-	SerializedProperty uartNum;
-	SerializedProperty uartBaudrate;
 	SerializedProperty OnConnected;
 	SerializedProperty OnConnectionFailed;
 	SerializedProperty OnDisconnected;
 
 	void OnEnable()
 	{
-		commObject = serializedObject.FindProperty("commObject");
 		timeoutSec = serializedObject.FindProperty("timeoutSec");
-		uartNum = serializedObject.FindProperty("uartNum");
-		uartBaudrate = serializedObject.FindProperty("uartBaudrate");
 		OnConnected = serializedObject.FindProperty("OnConnected");
 		OnConnectionFailed = serializedObject.FindProperty("OnConnectionFailed");
 		OnDisconnected = serializedObject.FindProperty("OnDisconnected");
@@ -43,15 +37,6 @@ public class ArduinoAppInspector : Editor
 			EditorGUILayout.HelpBox("To connect the board is only possible in Play mode.", MessageType.Info);
 			if(GUILayout.Button("Create Sketch") == true)
 				CreateSketch(EditorUtility.SaveFilePanel("Create Sketch", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "", "ino"));
-
-			foldout = EditorGUILayout.Foldout(foldout, "Sketch Options");
-			if(foldout == true)
-			{
-				EditorGUI.indentLevel++;
-				EditorGUILayout.PropertyField(uartNum, new GUIContent("UART (Serial_)"));
-				EditorGUILayout.PropertyField(uartBaudrate, new GUIContent("UART Baudrate"));
-				EditorGUI.indentLevel--;
-			}
 		}
 		else
 		{
@@ -76,7 +61,6 @@ public class ArduinoAppInspector : Editor
 			}
 		}
 
-		EditorGUILayout.PropertyField(commObject, new GUIContent("CommObject"));
 		EditorGUILayout.PropertyField(timeoutSec, new GUIContent("Timeout(sec)"));
 
 		EditorGUILayout.Separator();
@@ -96,8 +80,15 @@ public class ArduinoAppInspector : Editor
 			return;
 
 		ArduinoApp arduino = (ArduinoApp)target;
+		CommObject commObject = arduino.commObject;
 		AppAction[] actions = arduino.appActions;
 		StringBuilder source = new StringBuilder();
+
+		if(commObject == null)
+		{
+			Debug.LogError("CommObject must be needed!");
+			return;
+		}
 
 		// Check id duplications
 		for(int i=0; i<actions.Length; i++)
@@ -115,13 +106,14 @@ public class ArduinoAppInspector : Editor
 		// #Includes
 		List<Type> types = new List<Type>();
 		List<string> exIncludes = new List<string>();
+		string[] includes;
 		foreach(AppAction action in actions)
 		{
 			Type type = action.GetType();
 			if(types.IndexOf(type) < 0)
 			{
 				types.Add(type);
-				string[] includes = action.SketchIncludes();
+				includes = action.SketchIncludes();
 				if(includes != null)
 				{
 					foreach(string include in includes)
@@ -132,6 +124,15 @@ public class ArduinoAppInspector : Editor
 				}
 			}
 		}
+		includes = commObject.SketchIncludes();
+		if(includes != null)
+		{
+			foreach(string include in includes)
+			{
+				if(exIncludes.IndexOf(include) < 0)
+					exIncludes.Add(include);
+			}
+		}
 		foreach(string include in exIncludes)
 			source.AppendLine(include);
 		source.AppendLine("#include \"UnityApp.h\"");
@@ -140,6 +141,7 @@ public class ArduinoAppInspector : Editor
 		source.AppendLine();
 
 		// Declarations
+		source.AppendLine(commObject.SketchDeclaration());
 		foreach(AppAction action in actions)
 			source.AppendLine(action.SketchDeclaration());
 		source.AppendLine();
@@ -149,22 +151,16 @@ public class ArduinoAppInspector : Editor
 		source.AppendLine("{");
 		foreach(AppAction action in actions)
 			source.AppendLine(string.Format("  UnityApp.attachAction((AppAction*)&{0});", action.SketchVarName));
-		if(arduino.uartNum == 0)
-		{
-			source.AppendLine(string.Format("  UnityApp.begin({0:d});", arduino.uartBaudrate));
-		}
-		else
-		{
-			source.AppendLine(string.Format("  Serial{0:d}.begin({1:d});", arduino.uartNum, arduino.uartBaudrate));
-			source.AppendLine(string.Format("  UnityApp.begin(Serial{0:d});", arduino.uartNum));
-		}
+		if(commObject != null)
+			source.AppendLine(commObject.SketchSetup());
 		source.AppendLine("}");
 		source.AppendLine();
 
 		// void loop()
 		source.AppendLine("void loop()");
 		source.AppendLine("{");
-		source.AppendLine("  UnityApp.process();");
+		if(commObject != null)
+			source.AppendLine(commObject.SketchLoop());
 		source.AppendLine("}");
 
 		// Create source

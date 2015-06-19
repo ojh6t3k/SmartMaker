@@ -11,6 +11,7 @@ namespace SmartMaker
 		public int pin;
 
 		public Transform target;
+		public bool smoothFollow = true;
 		public Vector3 offsetAngles = Vector3.zero;
 
 		public UnityEvent OnCalibrated;
@@ -43,7 +44,7 @@ namespace SmartMaker
 		// Update is called once per frame
 		void Update ()
 		{
-			if(_time < 1f)
+			if(_time < 1f && smoothFollow == true)
 			{
 				_time += (Time.deltaTime / _refTime);
 				_curRotation = Quaternion.Lerp(_fromRotation, _toRotation, _time);
@@ -71,8 +72,9 @@ namespace SmartMaker
 		protected override void OnActionStart ()
 		{
 			_calibRotation = Quaternion.identity;
-			_curRotation = Quaternion.identity;
-			_toRotation = Quaternion.identity;
+			_toRotation =  Quaternion.identity;
+			_toRotation.eulerAngles += offsetAngles;
+			_curRotation = _toRotation;
 			_calibrated = true;
 			_time = 1f;
 		}
