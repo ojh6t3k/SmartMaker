@@ -558,7 +558,7 @@ int dmp_set_orientation(unsigned short orient)
  *  @param[in]  bias    Gyro biases in q16.
  *  @return     0 if successful.
  */
-int dmp_set_gyro_bias(long *bias)
+/*int dmp_set_gyro_bias(long *bias)
 {
     long gyro_bias_body[3];
     unsigned char regs[4];
@@ -602,7 +602,7 @@ int dmp_set_gyro_bias(long *bias)
     regs[2] = (unsigned char)((gyro_bias_body[2] >> 8) & 0xFF);
     regs[3] = (unsigned char)(gyro_bias_body[2] & 0xFF);
     return mpu_write_mem(D_EXT_GYRO_BIAS_Z, 4, regs);
-}
+}*/
 
 /**
  *  @brief      Push accel biases to the dmp->
@@ -610,7 +610,7 @@ int dmp_set_gyro_bias(long *bias)
  *  @param[in]  bias    Accel biases in q16.
  *  @return     0 if successful.
  */
-int dmp_set_accel_bias(long *bias)
+/*int dmp_set_accel_bias(long *bias)
 {
     long accel_bias_body[3];
     unsigned char regs[12];
@@ -654,7 +654,7 @@ int dmp_set_accel_bias(long *bias)
     regs[10] = (unsigned char)((accel_bias_body[2] >> 8) & 0xFF);
     regs[11] = (unsigned char)(accel_bias_body[2] & 0xFF);
     return mpu_write_mem(D_ACCEL_BIAS, 12, regs);
-}
+}*/
 
 /**
  *  @brief      Set DMP output rate.
@@ -688,11 +688,11 @@ int dmp_set_fifo_rate(unsigned short rate)
  *  @param[out] rate    Current fifo rate (Hz).
  *  @return     0 if successful.
  */
-int dmp_get_fifo_rate(unsigned short *rate)
+/*int dmp_get_fifo_rate(unsigned short *rate)
 {
     rate[0] = dmp->fifo_rate;
     return 0;
-}
+}*/
 
 #ifdef MPU_MAXIMAL
 
@@ -702,6 +702,7 @@ int dmp_get_fifo_rate(unsigned short *rate)
  *  @param[in]  thresh  Tap threshold, in mg/ms.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
 {
     unsigned char tmp[4], accel_fsr;
@@ -716,22 +717,22 @@ int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
     switch (accel_fsr) {
     case 2:
         dmp_thresh = (unsigned short)(scaled_thresh * 16384);
-        /* dmp_thresh * 0.75 */
+        // dmp_thresh * 0.75
         dmp_thresh_2 = (unsigned short)(scaled_thresh * 12288);
         break;
     case 4:
         dmp_thresh = (unsigned short)(scaled_thresh * 8192);
-        /* dmp_thresh * 0.75 */
+        // dmp_thresh * 0.75
         dmp_thresh_2 = (unsigned short)(scaled_thresh * 6144);
         break;
     case 8:
         dmp_thresh = (unsigned short)(scaled_thresh * 4096);
-        /* dmp_thresh * 0.75 */
+        // dmp_thresh * 0.75
         dmp_thresh_2 = (unsigned short)(scaled_thresh * 3072);
         break;
     case 16:
         dmp_thresh = (unsigned short)(scaled_thresh * 2048);
-        /* dmp_thresh * 0.75 */
+        // dmp_thresh * 0.75
         dmp_thresh_2 = (unsigned short)(scaled_thresh * 1536);
         break;
     default:
@@ -762,12 +763,14 @@ int dmp_set_tap_thresh(unsigned char axis, unsigned short thresh)
     }
     return 0;
 }
+*/
 
 /**
  *  @brief      Set which axes will register a tap.
  *  @param[in]  axis    1, 2, and 4 for XYZ, respectively.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_tap_axes(unsigned char axis)
 {
     unsigned char tmp = 0;
@@ -780,12 +783,14 @@ int dmp_set_tap_axes(unsigned char axis)
         tmp |= 0x03;
     return mpu_write_mem(D_1_72, 1, &tmp);
 }
+*/
 
 /**
  *  @brief      Set minimum number of taps needed for an interrupt.
  *  @param[in]  min_taps    Minimum consecutive taps (1-4).
  *  @return     0 if successful.
  */
+/*
 int dmp_set_tap_count(unsigned char min_taps)
 {
     unsigned char tmp;
@@ -798,12 +803,14 @@ int dmp_set_tap_count(unsigned char min_taps)
     tmp = min_taps - 1;
     return mpu_write_mem(D_1_79, 1, &tmp);
 }
+*/
 
 /**
  *  @brief      Set length between valid taps.
  *  @param[in]  time    Milliseconds between taps.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_tap_time(unsigned short time)
 {
     unsigned short dmp_time;
@@ -814,12 +821,14 @@ int dmp_set_tap_time(unsigned short time)
     tmp[1] = (unsigned char)(dmp_time & 0xFF);
     return mpu_write_mem(DMP_TAPW_MIN, 2, tmp);
 }
+*/
 
 /**
  *  @brief      Set max time between taps to register as a multi-tap.
  *  @param[in]  time    Max milliseconds between taps.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_tap_time_multi(unsigned short time)
 {
     unsigned short dmp_time;
@@ -830,6 +839,7 @@ int dmp_set_tap_time_multi(unsigned short time)
     tmp[1] = (unsigned char)(dmp_time & 0xFF);
     return mpu_write_mem(D_1_218, 2, tmp);
 }
+*/
 
 /**
  *  @brief      Set shake rejection threshold.
@@ -838,6 +848,7 @@ int dmp_set_tap_time_multi(unsigned short time)
  *  @param[in]  thresh  Gyro threshold in dps.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
 {
     unsigned char tmp[4];
@@ -848,6 +859,7 @@ int dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
     tmp[3] = (unsigned char)((long)thresh_scaled & 0xFF);
     return mpu_write_mem(D_1_92, 4, tmp);
 }
+*/
 
 /**
  *  @brief      Set shake rejection time.
@@ -857,6 +869,7 @@ int dmp_set_shake_reject_thresh(long sf, unsigned short thresh)
  *  @param[in]  time    Time in milliseconds.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_shake_reject_time(unsigned short time)
 {
     unsigned char tmp[2];
@@ -866,6 +879,7 @@ int dmp_set_shake_reject_time(unsigned short time)
     tmp[1] = time & 0xFF;
     return mpu_write_mem(D_1_90,2,tmp);
 }
+*/
 
 /**
  *  @brief      Set shake rejection timeout.
@@ -875,6 +889,7 @@ int dmp_set_shake_reject_time(unsigned short time)
  *  @param[in]  time    Time in milliseconds.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_shake_reject_timeout(unsigned short time)
 {
     unsigned char tmp[2];
@@ -884,12 +899,14 @@ int dmp_set_shake_reject_timeout(unsigned short time)
     tmp[1] = time & 0xFF;
     return mpu_write_mem(D_1_88,2,tmp);
 }
+*/
 
 /**
  *  @brief      Get current step count.
  *  @param[out] count   Number of steps detected.
  *  @return     0 if successful.
  */
+/*
 int dmp_get_pedometer_step_count(unsigned long *count)
 {
     unsigned char tmp[4];
@@ -903,6 +920,7 @@ int dmp_get_pedometer_step_count(unsigned long *count)
         ((unsigned long)tmp[2] << 8) | tmp[3];
     return 0;
 }
+*/
 
 /**
  *  @brief      Overwrite current step count.
@@ -911,6 +929,7 @@ int dmp_get_pedometer_step_count(unsigned long *count)
  *  @param[in]  count   New step count.
  *  @return     0 if successful.
  */
+/*
 int dmp_set_pedometer_step_count(unsigned long count)
 {
     unsigned char tmp[4];
@@ -921,12 +940,14 @@ int dmp_set_pedometer_step_count(unsigned long count)
     tmp[3] = (unsigned char)(count & 0xFF);
     return mpu_write_mem(D_PEDSTD_STEPCTR, 4, tmp);
 }
+*/
 
 /**
  *  @brief      Get duration of walking time.
  *  @param[in]  time    Walk time in milliseconds.
  *  @return     0 if successful.
  */
+/*
 int dmp_get_pedometer_walk_time(unsigned long *time)
 {
     unsigned char tmp[4];
@@ -940,6 +961,7 @@ int dmp_get_pedometer_walk_time(unsigned long *time)
         ((unsigned long)tmp[2] << 8) | tmp[3]) * 20;
     return 0;
 }
+*/
 
 /**
  *  @brief      Overwrite current walk time.
@@ -947,6 +969,7 @@ int dmp_get_pedometer_walk_time(unsigned long *time)
  *  a race condition if called while the pedometer is enabled.
  *  @param[in]  time    New walk time in milliseconds.
  */
+/*
 int dmp_set_pedometer_walk_time(unsigned long time)
 {
     unsigned char tmp[4];
@@ -959,6 +982,7 @@ int dmp_set_pedometer_walk_time(unsigned long time)
     tmp[3] = (unsigned char)(time & 0xFF);
     return mpu_write_mem(D_PEDSTD_TIMECTR, 4, tmp);
 }
+*/
 #endif // MPU_MAXIMAL
 
 /**
@@ -1102,11 +1126,11 @@ int dmp_enable_feature(unsigned short mask)
  *  @param[out] Mask of enabled features.
  *  @return     0 if successful.
  */
-int dmp_get_enabled_features(unsigned short *mask)
+/*int dmp_get_enabled_features(unsigned short *mask)
 {
     mask[0] = dmp->feature_mask;
     return 0;
-}
+}*/
 
 /**
  *  @brief      Calibrate the gyro data in the dmp->
@@ -1214,7 +1238,7 @@ static int decode_gesture(unsigned char *gesture)
  *  @param[in]  mode    DMP_INT_GESTURE or DMP_INT_CONTINUOUS.
  *  @return     0 if successful.
  */
-int dmp_set_interrupt_mode(unsigned char mode)
+/*int dmp_set_interrupt_mode(unsigned char mode)
 {
     const unsigned char regs_continuous[11] =
         {0xd8, 0xb1, 0xb9, 0xf3, 0x8b, 0xa3, 0x91, 0xb6, 0x09, 0xb4, 0xd9};
@@ -1231,7 +1255,7 @@ int dmp_set_interrupt_mode(unsigned char mode)
     default:
         return -1;
     }
-}
+}*/
 
 /**
  *  @brief      Get one packet from the FIFO.
@@ -1349,22 +1373,26 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
  *  @param[in]  func    Callback function.
  *  @return     0 if successful.
  */
+/*
 int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
 {
     dmp->tap_cb = func;
     return 0;
 }
+*/
 
 /**
  *  @brief      Register a function to be executed on a android orientation event.
  *  @param[in]  func    Callback function.
  *  @return     0 if successful.
  */
+/*
 int dmp_register_android_orient_cb(void (*func)(unsigned char))
 {
     dmp->android_orient_cb = func;
     return 0;
 }
+*/
 #endif // MPU_MAXIMAL
 
 /**

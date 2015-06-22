@@ -19,16 +19,17 @@ namespace SmartMaker
 
 		void Awake()
 		{
-			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			_socket.NoDelay = true;
-			_socket.ReceiveBufferSize = 4096;
-			_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
 		}		
 
 		public override void Open()
 		{
 			try
 			{
+				_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				_socket.NoDelay = true;
+				_socket.ReceiveBufferSize = 4096;
+				_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+
 				SocketAsyncEventArgs e = new SocketAsyncEventArgs();
 				e.RemoteEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
 				e.UserToken = _socket;			
@@ -50,7 +51,7 @@ namespace SmartMaker
 				_socket.Shutdown(SocketShutdown.Both);
 				_socket.Close();
 			}
-			catch(Exception)
+			catch(Exception e)
 			{
 			}
 		}
@@ -151,7 +152,7 @@ namespace SmartMaker
 		public override string SketchLoop ()
 		{
 			StringBuilder source = new StringBuilder();
-			
+
 			source.AppendLine("  YunClient client = server.accept();");
 			source.AppendLine("");
 			source.AppendLine("  if(client)");

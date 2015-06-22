@@ -293,10 +293,18 @@ namespace SmartMaker
 				List<AppAction> listActions = new List<AppAction>(GameObject.FindObjectsOfType<AppAction>());
 				for(int i=0; i<listActions.Count; i++)
 				{
-					if(listActions[i].enabled == false || listActions[i].owner.Equals(this) == false)
+					if(listActions[i].owner == null)
 					{
 						listActions.RemoveAt(i);
 						i--;
+					}
+					else
+					{
+						if(listActions[i].enabled == false || listActions[i].owner.Equals(this) == false)
+						{
+							listActions.RemoveAt(i);
+							i--;
+						}
 					}
 				}
 
