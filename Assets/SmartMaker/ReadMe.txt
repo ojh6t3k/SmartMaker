@@ -1,8 +1,8 @@
 Smart Maker for Unity3D
 
 [Release]
--Version: v1.0.0b4
--Date: 6/16/2015
+-Version: v1.0.0b5
+-Date: Jun/24/2015
 
 
 [What's purpose]

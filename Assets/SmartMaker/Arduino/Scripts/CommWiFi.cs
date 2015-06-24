@@ -24,6 +24,8 @@ namespace SmartMaker
 		public int baudrate = 115200;
 		public string streamClass = "Serial";
 
+		public string errorMessage;
+
 		private Socket _socket;
 
 		void Awake()
@@ -123,6 +125,7 @@ namespace SmartMaker
 			}
 			else
 			{
+				errorMessage = e.SocketError.ToString();
 				if(OnOpenFailed != null)
 					OnOpenFailed(this, null);
 			}
