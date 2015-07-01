@@ -6,23 +6,23 @@ using SmartMaker;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("SmartMaker")]
-	[Tooltip("ArduinoApp.Disconnect()")]
-	public class ArduinoAppDisconnect : FsmStateAction
+	[Tooltip("SignalController.Stop()")]
+	public class SignalControllerStop : FsmStateAction
 	{
 		[RequiredField]
-		public ArduinoApp arduinoApp;
+		public SignalController signalController;
 
 		public override void Reset()
 		{
-			arduinoApp = null;
+			signalController = null;
 		}
-		
+
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			
-			if(arduinoApp != null)
-				arduinoApp.Disconnect();
+			if(signalController != null)
+				signalController.Stop();
 			
 			Finish();
 		}

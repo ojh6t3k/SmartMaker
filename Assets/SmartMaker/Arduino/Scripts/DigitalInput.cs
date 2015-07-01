@@ -96,5 +96,19 @@ namespace SmartMaker
 		protected override void OnPush ()
 		{
 		}
+
+		public override float signalValue
+		{
+			get
+			{
+				if(_value == 0)
+					return 0f;
+				else
+					return 1f;
+			}
+			set
+			{
+			}
+		}
 	}
 }

@@ -83,5 +83,17 @@ namespace SmartMaker
 			int angle = (int)Mathf.Clamp((float)_bAngle + offsetAngle, 0f, 180f);
 			Push((byte)angle);
 		}
+
+		public override float signalValue
+		{
+			get
+			{
+				return angle;
+			}
+			set
+			{
+				angle = value;
+			}
+		}
 	}
 }

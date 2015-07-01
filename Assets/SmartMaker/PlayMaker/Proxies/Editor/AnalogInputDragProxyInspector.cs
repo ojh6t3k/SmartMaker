@@ -30,31 +30,11 @@ public class AnalogInputDragProxyInspector : Editor
 		}
 		else
 		{
-			proxy.eventOnDragStart = EventField("OnDragStart", proxy.eventOnDragStart, proxy.builtInOnDragStart);
-			proxy.eventOnDragMove = EventField("OnDragMove", proxy.eventOnDragMove, proxy.builtInOnDragMove);
-			proxy.eventOnDragEnd = EventField("OnDragEnd", proxy.eventOnDragEnd, proxy.builtInOnDragEnd);
+			proxy.eventOnDragStart = ProxyInspectorUtil.EventField(target, "OnDragStart", proxy.eventOnDragStart, proxy.builtInOnDragStart);
+			proxy.eventOnDragMove = ProxyInspectorUtil.EventField(target, "OnDragMove", proxy.eventOnDragMove, proxy.builtInOnDragMove);
+			proxy.eventOnDragEnd = ProxyInspectorUtil.EventField(target, "OnDragEnd", proxy.eventOnDragEnd, proxy.builtInOnDragEnd);
 		}
 
 		this.serializedObject.ApplyModifiedProperties();
-	}
-	
-	private string EventField(string eventName, string customEvent, string builtInEvent)
-	{
-		EditorGUILayout.LabelField(string.Format("Event: {0}", eventName));
-		EditorGUI.indentLevel++;
-		GUILayout.BeginHorizontal();
-		customEvent = EditorGUILayout.TextField(customEvent);
-		if(customEvent.Equals(builtInEvent) == false)
-		{
-			if(GUILayout.Button("Reset", GUILayout.Width(50f)) == true)
-			{
-				customEvent = builtInEvent;
-				EditorUtility.SetDirty(target);
-			}
-		}
-		GUILayout.EndHorizontal();
-		EditorGUI.indentLevel--;
-		
-		return customEvent;
 	}
 }

@@ -75,5 +75,17 @@ namespace SmartMaker
 		{
 			Push(_bValue);
 		}
+
+		public override float signalValue
+		{
+			get
+			{
+				return this.value;
+			}
+			set
+			{
+				this.value = Mathf.Clamp(value, 0f, 1f);
+			}
+		}
 	}
 }

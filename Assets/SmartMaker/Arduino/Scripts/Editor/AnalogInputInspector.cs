@@ -16,7 +16,13 @@ public class AnalogInputInspector : Editor
 	SerializedProperty OnStarted;
 	SerializedProperty OnExcuted;
 	SerializedProperty OnStopped;
-	
+
+	SerializedProperty filter;
+	SerializedProperty minValue;
+	SerializedProperty maxValue;
+	SerializedProperty smooth;
+	SerializedProperty sensitivity;
+
 	void OnEnable()
 	{
 		owner = serializedObject.FindProperty("owner");
@@ -26,6 +32,12 @@ public class AnalogInputInspector : Editor
 		OnStarted = serializedObject.FindProperty("OnStarted");
 		OnExcuted = serializedObject.FindProperty("OnExcuted");
 		OnStopped = serializedObject.FindProperty("OnStopped");
+
+		filter = serializedObject.FindProperty("filter");
+		minValue = serializedObject.FindProperty("minValue");
+		maxValue = serializedObject.FindProperty("maxValue");
+		smooth = serializedObject.FindProperty("smooth");
+		sensitivity = serializedObject.FindProperty("sensitivity");
 	}
 	
 	public override void OnInspectorGUI()
@@ -49,6 +61,30 @@ public class AnalogInputInspector : Editor
 		EditorGUILayout.PropertyField(resolution, new GUIContent("Resolution"));
 		EditorGUILayout.FloatField("Analog Value", aInput.Value);
 
+		EditorGUILayout.PropertyField(filter, new GUIContent("Filter"));
+		if(filter.boolValue == true)
+		{
+			EditorGUILayout.PropertyField(minValue, new GUIContent("Min Value"));
+			EditorGUILayout.PropertyField(maxValue, new GUIContent("Max Value"));
+			EditorGUILayout.PropertyField(smooth, new GUIContent("Smooth"));
+			if(smooth.boolValue == true)
+				EditorGUILayout.PropertyField(sensitivity, new GUIContent("Sensitivity"));
+
+			EditorGUILayout.FloatField("Momentum", aInput.Momentum);
+
+			if(Application.isPlaying == true)
+			{
+				if(GUILayout.Button("Reset") == true)
+					aInput.Reset();
+				
+				DrawCurve(aInput.OriginValues, "Original Value", 0f, 1f);
+				DrawCurve(aInput.FilterValues, "Filtered Value", 0f, 1f);
+				DrawCurve(aInput.Momentums, "Momentum", -0.5f, 0.5f);
+				
+				EditorUtility.SetDirty(target);
+			}
+		}
+
 		EditorGUILayout.Separator();
 		EditorGUILayout.PropertyField(OnStarted);
 		EditorGUILayout.PropertyField(OnExcuted);
@@ -58,5 +94,25 @@ public class AnalogInputInspector : Editor
 			EditorUtility.SetDirty(target);
 		
 		this.serializedObject.ApplyModifiedProperties();
+	}
+
+	private void DrawCurve(float[] values, string label, float min, float max)
+	{
+		EditorGUILayout.Space();
+		
+		AnimationCurve curve = new AnimationCurve();
+		float lastValue = 0f;
+		if(values.Length > 0)
+		{
+			curve.AddKey(0f, max);
+			curve.AddKey(0.1f, min);
+			for(int i=0; i<values.Length; i++)
+				curve.AddKey(0.1f * (i + 2), values[i]);
+			lastValue = values[values.Length - 1];
+		}
+		EditorGUILayout.LabelField(label + string.Format(" {0:F2}", lastValue));
+		GUI.enabled = false;
+		EditorGUILayout.CurveField(curve, GUILayout.Height(100));
+		GUI.enabled = true;
 	}
 }

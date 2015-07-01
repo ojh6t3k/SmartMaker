@@ -6,23 +6,28 @@ using SmartMaker;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("SmartMaker")]
-	[Tooltip("ArduinoApp.Disconnect()")]
-	public class ArduinoAppDisconnect : FsmStateAction
+	[Tooltip("Get ToneFrequency")]
+	public class GetToneFrequency : FsmStateAction
 	{
+		public ToneFrequency toneFrequency;
+
 		[RequiredField]
-		public ArduinoApp arduinoApp;
+		[UIHint(UIHint.Variable)]
+		public FsmFloat storedValue;
 
 		public override void Reset()
 		{
-			arduinoApp = null;
+			storedValue = null;
 		}
-		
+
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			
-			if(arduinoApp != null)
-				arduinoApp.Disconnect();
+			if(storedValue != null)
+			{
+				storedValue.Value = (float)toneFrequency;
+			}
 			
 			Finish();
 		}

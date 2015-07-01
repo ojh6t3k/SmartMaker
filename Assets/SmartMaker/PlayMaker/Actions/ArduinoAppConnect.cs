@@ -11,6 +11,11 @@ namespace HutongGames.PlayMaker.Actions
 	{
 		[RequiredField]
 		public ArduinoApp arduinoApp;
+
+		public override void Reset()
+		{
+			arduinoApp = null;
+		}
 		
 		public override void OnEnter()
 		{

@@ -76,5 +76,23 @@ namespace SmartMaker
 		{
 			Push(_bValue);
 		}
+
+		public override float signalValue
+		{
+			get
+			{
+				if(this.value == true)
+					return 1f;
+				else
+					return 0f;
+			}
+			set
+			{
+				if(value > 0f)
+					this.value = true;
+				else
+					this.value = false;
+			}
+		}
 	}
 }

@@ -173,5 +173,17 @@ namespace SmartMaker
 				frequency = (float)value;
 			}
 		}
+
+		public override float signalValue
+		{
+			get
+			{
+				return frequency;
+			}
+			set
+			{
+				frequency = value;
+			}
+		}
 	}
 }

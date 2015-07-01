@@ -245,5 +245,16 @@ namespace SmartMaker
 		protected virtual void OnPop()
 		{
 		}
+
+		public virtual float signalValue
+		{
+			set
+			{
+			}
+			get
+			{
+				return 0f;
+			}
+		}
 	}
 }

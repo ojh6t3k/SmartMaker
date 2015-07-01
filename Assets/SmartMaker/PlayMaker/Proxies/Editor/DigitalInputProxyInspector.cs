@@ -19,29 +19,9 @@ public class DigitalInputProxyInspector : Editor
 		}
 		else
 		{
-			proxy.eventOnStarted = EventField("OnStarted", proxy.eventOnStarted, proxy.builtInOnStarted);
-			proxy.eventOnStopped = EventField("OnStopped", proxy.eventOnStopped, proxy.builtInOnStopped);
-			proxy.eventOnChangedValue = EventField("OnChangedValue", proxy.eventOnChangedValue, proxy.builtInOnChangedValue);
+			proxy.eventOnStarted = ProxyInspectorUtil.EventField(target, "OnStarted", proxy.eventOnStarted, proxy.builtInOnStarted);
+			proxy.eventOnStopped = ProxyInspectorUtil.EventField(target, "OnStopped", proxy.eventOnStopped, proxy.builtInOnStopped);
+			proxy.eventOnChangedValue = ProxyInspectorUtil.EventField(target, "OnChangedValue", proxy.eventOnChangedValue, proxy.builtInOnChangedValue);
 		}
-	}
-	
-	private string EventField(string eventName, string customEvent, string builtInEvent)
-	{
-		EditorGUILayout.LabelField(string.Format("Event: {0}", eventName));
-		EditorGUI.indentLevel++;
-		GUILayout.BeginHorizontal();
-		customEvent = EditorGUILayout.TextField(customEvent);
-		if(customEvent.Equals(builtInEvent) == false)
-		{
-			if(GUILayout.Button("Reset", GUILayout.Width(50f)) == true)
-			{
-				customEvent = builtInEvent;
-				EditorUtility.SetDirty(target);
-			}
-		}
-		GUILayout.EndHorizontal();
-		EditorGUI.indentLevel--;
-		
-		return customEvent;
 	}
 }
