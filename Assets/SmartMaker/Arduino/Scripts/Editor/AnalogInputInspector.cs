@@ -70,8 +70,6 @@ public class AnalogInputInspector : Editor
 			if(smooth.boolValue == true)
 				EditorGUILayout.PropertyField(sensitivity, new GUIContent("Sensitivity"));
 
-			EditorGUILayout.FloatField("Momentum", aInput.Momentum);
-
 			if(Application.isPlaying == true)
 			{
 				if(GUILayout.Button("Reset") == true)
@@ -79,8 +77,7 @@ public class AnalogInputInspector : Editor
 				
 				DrawCurve(aInput.OriginValues, "Original Value", 0f, 1f);
 				DrawCurve(aInput.FilterValues, "Filtered Value", 0f, 1f);
-				DrawCurve(aInput.Momentums, "Momentum", -0.5f, 0.5f);
-				
+
 				EditorUtility.SetDirty(target);
 			}
 		}

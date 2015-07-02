@@ -25,7 +25,6 @@ namespace SmartMaker
 		private int _sampleNum = 100;
 		private ArrayList _originValues = new ArrayList();
 		private ArrayList _values = new ArrayList();
-		private ArrayList _momentums = new ArrayList();
 		// Kalman filter's parameter
 		private float _Q;
 		private float _R;
@@ -74,19 +73,6 @@ namespace SmartMaker
 			}
 		}
 
-		public float Momentum
-		{
-			get
-			{
-				if(filter == true)
-				{
-					return (float)_momentums[_momentums.Count - 1];
-				}
-				else
-					return 0f;
-			}
-		}
-		
 		public float[] OriginValues
 		{
 			get
@@ -102,15 +88,7 @@ namespace SmartMaker
 				return (float[])_values.ToArray(typeof(float));
 			}
 		}
-		
-		public float[] Momentums
-		{
-			get
-			{
-				return (float[])_momentums.ToArray(typeof(float));
-			}
-		}
-		
+
 		public override string SketchDeclaration()
 		{
 			return string.Format("{0} {1}({2:d}, A{3:d});", this.GetType().Name, SketchVarName, id, pin);
@@ -149,9 +127,7 @@ namespace SmartMaker
 					_originValues.RemoveAt(0);
 				if(_values.Count >= _sampleNum)
 					_values.RemoveAt(0);
-				if(_momentums.Count >= _sampleNum)
-					_momentums.RemoveAt(0);
-				
+
 				_filterValue = Mathf.Clamp(_originValue, minValue, maxValue);
 				_filterValue = (_filterValue - minValue) / (maxValue - minValue);
 
@@ -170,8 +146,6 @@ namespace SmartMaker
 
 				_originValues.Add(_originValue);
 				_values.Add(_filterValue);
-				float momentum = _filterValue - (float)_values[_values.Count - 2];
-				_momentums.Add(momentum);
 			}
 		}
 		
@@ -205,11 +179,6 @@ namespace SmartMaker
 			_values.Add(0f);
 			_values.Add(0f);
 			_values.Add(0f);
-			
-			_momentums.Clear();
-			_momentums.Add(0f);
-			_momentums.Add(0f);
-			_momentums.Add(0f);
 		}
 		
 		private void FilterReset()
