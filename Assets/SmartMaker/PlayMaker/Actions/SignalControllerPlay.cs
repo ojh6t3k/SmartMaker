@@ -12,6 +12,7 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		public SignalController signalController;
 		public FsmInt index;
+		public FsmFloat bias;
 		public FsmFloat multiplier;
 		public FsmFloat speed;
 		public FsmBool loop;
@@ -21,6 +22,7 @@ namespace HutongGames.PlayMaker.Actions
 			signalController = null;
 			// default axis to variable dropdown with None selected.
 			index = new FsmInt { UseVariable = true };
+			bias = new FsmFloat { UseVariable = true };
 			multiplier = new FsmFloat { UseVariable = true };
 			speed = new FsmFloat { UseVariable = true };
 			loop = new FsmBool { UseVariable = true };
@@ -34,6 +36,9 @@ namespace HutongGames.PlayMaker.Actions
 			{
 				if(!index.IsNone)
 					signalController.index = index.Value;
+
+				if(!bias.IsNone)
+					signalController.bias = bias.Value;
 
 				if(!multiplier.IsNone)
 					signalController.multiplier = multiplier.Value;

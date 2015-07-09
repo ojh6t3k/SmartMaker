@@ -12,6 +12,7 @@ namespace SmartMaker
 		public AnimationCurve[] signals;
 
 		public int index = 0;
+		public float bias = 0f;
 		public float multiplier = 1f;
 		public float speed = 1f;
 		public UnityEvent OnStarted;
@@ -21,6 +22,10 @@ namespace SmartMaker
 		private bool _playing;
 		private float _endTime;
 		private float _time;
+		private int _index;
+		private float _speed;
+		private float _bias;
+		private float _multiplier;
 
 		// Use this for initialization
 		void Start ()
@@ -34,7 +39,7 @@ namespace SmartMaker
 			if(_playing == true)
 			{
 				if(appAction != null)
-					appAction.signalValue = signals[index].Evaluate(_time * speed) * multiplier;
+					appAction.signalValue = signals[_index].Evaluate(_time * _speed) * _multiplier + _bias;
 
 				if(_time == _endTime)
 				{
@@ -87,8 +92,12 @@ namespace SmartMaker
 				return;
 			}
 
+			_index = index;
+			_speed = speed;
+			_bias = bias;
+			_multiplier = multiplier - bias;
 			_time = 0f;
-			_endTime = signals[index].keys[keyNum - 1].time / speed;
+			_endTime = signals[_index].keys[keyNum - 1].time / _speed;
 			_playing = true;
 
 			OnStarted.Invoke();

@@ -13,6 +13,7 @@ public class SignalControllerInspector : Editor
 	SerializedProperty loop;
 	SerializedProperty signals;
 	SerializedProperty index;
+	SerializedProperty bias;
 	SerializedProperty multiplier;
 	SerializedProperty speed;
 	SerializedProperty OnStarted;
@@ -25,6 +26,7 @@ public class SignalControllerInspector : Editor
 		loop = serializedObject.FindProperty("loop");
 		signals = serializedObject.FindProperty("signals");
 		index = serializedObject.FindProperty("index");
+		bias = serializedObject.FindProperty("bias");
 		multiplier = serializedObject.FindProperty("multiplier");
 		speed = serializedObject.FindProperty("speed");
 		OnStarted = serializedObject.FindProperty("OnStarted");
@@ -45,6 +47,7 @@ public class SignalControllerInspector : Editor
 		{
 			EditorGUI.indentLevel++;
 			EditorGUILayout.PropertyField(index, new GUIContent("index"));
+			EditorGUILayout.PropertyField(bias, new GUIContent("bias"));
 			EditorGUILayout.PropertyField(multiplier, new GUIContent("multiplier"));
 			EditorGUILayout.PropertyField(speed, new GUIContent("speed"));
 			EditorGUILayout.PropertyField(loop, new GUIContent("loop"));
