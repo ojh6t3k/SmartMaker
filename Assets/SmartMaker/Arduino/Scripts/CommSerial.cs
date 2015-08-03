@@ -90,7 +90,11 @@ namespace SmartMaker
 
 		public override void Open()
 		{
+#if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
 			_serialPort.PortName = "//./" + portName;
+#else
+			_serialPort.PortName = portName;
+#endif
 
 			try
 			{

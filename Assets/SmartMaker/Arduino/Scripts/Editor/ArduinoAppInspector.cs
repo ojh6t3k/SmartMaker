@@ -169,26 +169,34 @@ public class ArduinoAppInspector : Editor
 		sw.Write(source.ToString());
 		sw.Close();
 
-		string srcPath = "Assets/SmartMaker/Arduino/Sketch";
-		try
+		string[] results = Directory.GetDirectories("Assets/", "SmartMaker", SearchOption.AllDirectories);
+		if(results.Length > 0)
 		{
-			CopyLibrary("UnityApp", srcPath, path);
-			CopyLibrary("AppAction", srcPath, path);
-			foreach(Type type in types)
+			string srcPath = Path.Combine(results[0], "Arduino/Library");
+			try
 			{
-				CopyLibrary(type.Name, srcPath, path);
-				string subPath = Path.Combine(srcPath, type.Name);
-				if(Directory.Exists(subPath) == true)
+				CopyLibrary("UnityApp", srcPath, path);
+				CopyLibrary("AppAction", srcPath, path);
+				foreach(Type type in types)
 				{
-					string[] subFiles = Directory.GetFiles(subPath);
-					foreach(string subFile in subFiles)
-						File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+					CopyLibrary(type.Name, srcPath, path);
+					string subPath = Path.Combine(srcPath, type.Name);
+					if(Directory.Exists(subPath) == true)
+					{
+						string[] subFiles = Directory.GetFiles(subPath);
+						foreach(string subFile in subFiles)
+							File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+					}
 				}
 			}
+			catch(Exception e)
+			{
+				Debug.LogError(e);
+			}
 		}
-		catch(Exception)
+		else
 		{
-			Debug.LogError(string.Format("Copy error! It must be in the \"{0}\" path.", srcPath));
+			Debug.LogError(string.Format("Can not find path of Arduino Library!"));
 		}
 	}
 

@@ -1,8 +1,8 @@
 Smart Maker for Unity3D
 
 [Release]
--Version: v1.0.0b6 (Smart Golf Club)
--Date: July/2/2015
+-Version: v1.0.0b7
+-Date: August/3/2015
 
 
 [What's purpose]
