@@ -23,38 +23,40 @@ NeoPixel::NeoPixel(int id, int num, int pin, int config) : AppAction(id)
 //******************************************************************************
 //* Override Methods
 //******************************************************************************
-void AnalogInput::OnSetup()
+void NeoPixel::OnSetup()
 {
 	_strip.begin();
 	_strip.show();
 }
 
-void AnalogInput::OnStart()
+void NeoPixel::OnStart()
 {
 }
 
-void AnalogInput::OnStop()
+void NeoPixel::OnStop()
 {	
 }
 
-void AnalogInput::OnProcess()
+void NeoPixel::OnProcess()
 {	
 }
 
-void AnalogInput::OnUpdate()
+void NeoPixel::OnUpdate()
 {
 	UnityApp.pop(&_index);
 	UnityApp.pop(&_red);
 	UnityApp.pop(&_green);
 	UnityApp.pop(&_blue);
+	UnityApp.pop(&_brightness);
 }
 
-void AnalogInput::OnExcute()
+void NeoPixel::OnExcute()
 {
+	_strip.setBrightness(_brightness);
 	_strip.setPixelColor(_index, _red, _green, _blue);
 	_strip.show();
 }
 
-void AnalogInput::OnFlush()
+void NeoPixel::OnFlush()
 {
 }

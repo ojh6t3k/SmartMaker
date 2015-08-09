@@ -6,14 +6,14 @@
 #ifndef NeoPixel_h
 #define NeoPixel_h
 
-#include "AppAction.h"
 #include <Adafruit_NeoPixel.h>
+#include "AppAction.h"
 
 
 class NeoPixel : AppAction
 {
 public:
-	NeoPixel(int id, int num, int pin, int option);
+	NeoPixel(int id, int num, int pin, int config);
 
 protected:
 	void OnSetup();
@@ -30,6 +30,7 @@ private:
 	byte _red;
 	byte _green;
 	byte _blue;
+	byte _brightness;
 };
 
 #endif
