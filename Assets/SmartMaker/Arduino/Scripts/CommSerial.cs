@@ -46,7 +46,16 @@ namespace SmartMaker
 		public void PortSearch()
 		{
 			portNames.Clear();
+#if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
 			portNames.AddRange(SerialPort.GetPortNames());
+#else
+			string[] ports = Directory.GetFiles ("/dev/", "cu.*");
+			foreach (string p in ports)
+			{
+				if(p.StartsWith ("/dev/cu.usb") == true)
+					portNames.Add(p);
+			}
+#endif
 
 			if(uiPanel != null && uiItem != null)
 			{
