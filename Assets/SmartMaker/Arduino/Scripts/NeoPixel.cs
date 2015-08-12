@@ -27,13 +27,15 @@ namespace SmartMaker
 		public int pin;
 		public int num;
 		public CONFIG config;
+		[Range(0f, 1f)]
+		public float brightness = 1f;
 
 		private Pixel[] _pixels;
 		private byte _index;
 		private byte _red;
 		private byte _green;
 		private byte _blue;
-		private byte _brightness;
+		private float _brightness;
 
 		void Awake()
 		{
@@ -50,19 +52,10 @@ namespace SmartMaker
 		// Update is called once per frame
 		void Update ()
 		{
-		}
-
-		public float Brightness
-		{
-			set
+			if(brightness != _brightness)
 			{
-				float v = Mathf.Clamp(value, 0f, 1f);
-				_brightness = (byte)(v * 255f);
+				_brightness = brightness;
 				SetDirty();
-			}
-			get
-			{
-				return (float)_brightness / 255f;
 			}
 		}
 
@@ -167,7 +160,7 @@ namespace SmartMaker
 			Push(_red);
 			Push(_green);
 			Push(_blue);
-			Push(_brightness);
+			Push((byte)(_brightness * 255f));
 
 			for(int i=0; i<_pixels.Length; i++)
 			{

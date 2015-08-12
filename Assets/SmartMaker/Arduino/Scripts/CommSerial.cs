@@ -49,11 +49,14 @@ namespace SmartMaker
 #if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
 			portNames.AddRange(SerialPort.GetPortNames());
 #else
-			string[] ports = Directory.GetFiles ("/dev/", "cu.*");
+			string prefix = "/dev/";
+			string[] ports = Directory.GetFiles("/dev/", "*.*");
 			foreach (string p in ports)
 			{
 				if(p.StartsWith ("/dev/cu.usb") == true)
-					portNames.Add(p);
+					portNames.Add(p.Substring(prefix.Length));
+			//	else if(p.StartsWith ("/dev/tty.usb") == true)
+			//		portNames.Add(p.Substring(prefix.Length));
 			}
 #endif
 
@@ -101,6 +104,8 @@ namespace SmartMaker
 		{
 #if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
 			_serialPort.PortName = "//./" + portName;
+#elif UINTY_STANDALONE_OSX || UNITY_EDITOR_OSX
+			_serialPort.PortName = "/dev/" + portName;
 #else
 			_serialPort.PortName = portName;
 #endif

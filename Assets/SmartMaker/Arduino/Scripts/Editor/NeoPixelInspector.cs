@@ -14,6 +14,7 @@ public class NeoPixelInspector : Editor
 	SerializedProperty pin;
 	SerializedProperty num;
 	SerializedProperty config;
+	SerializedProperty brightness;
 	SerializedProperty OnStarted;
 	SerializedProperty OnStopped;
 
@@ -27,6 +28,7 @@ public class NeoPixelInspector : Editor
 		pin = serializedObject.FindProperty("pin");
 		num = serializedObject.FindProperty("num");
 		config = serializedObject.FindProperty("config");
+		brightness = serializedObject.FindProperty("brightness");
 		OnStarted = serializedObject.FindProperty("OnStarted");
 		OnStopped = serializedObject.FindProperty("OnStopped");
 	}
@@ -50,20 +52,15 @@ public class NeoPixelInspector : Editor
 			EditorGUI.indentLevel--;
 		}
 
+		EditorGUILayout.Separator();
+		EditorGUILayout.PropertyField(brightness, new GUIContent("Brightness"));
+
 		if(Application.isPlaying == true)
 		{
-			EditorGUILayout.Separator();
-			float oldBrightness = neoPixel.Brightness;
-			float newBrightness = EditorGUILayout.Slider("Brightness", oldBrightness, 0f, 1f);
-			if(newBrightness != oldBrightness)
-				neoPixel.Brightness = newBrightness;
-
 			_index = EditorGUILayout.IntField("Index", _index);
 			_color = EditorGUILayout.ColorField("Color", _color);
 			if(GUILayout.Button("Set Pixel") == true)
-			{
 				neoPixel.SetPixel(_index, _color);
-			}
 		}
 		
 		EditorGUILayout.Separator();

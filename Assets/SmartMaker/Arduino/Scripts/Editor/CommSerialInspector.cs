@@ -43,6 +43,11 @@ public class CommSerialInspector : Editor
 
 		GUI.enabled = !serial.IsOpen;
 
+#if UINTY_STANDALONE_OSX || UNITY_EDITOR_OSX
+		EditorGUILayout.PropertyField(portName, new GUIContent("Port Name (/dev/)"));
+#else
+		EditorGUILayout.PropertyField(portName, new GUIContent("Port Name"));
+#endif
 		EditorGUILayout.BeginHorizontal();
 		int index = -1;
 		string[] list = new string[portNames.arraySize];
@@ -52,12 +57,10 @@ public class CommSerialInspector : Editor
 			if(portName.stringValue.Equals(list[i]) == true)
 				index = i;
 		}
-		index = EditorGUILayout.Popup("Port Name", index, list);
+		index = EditorGUILayout.Popup(" ", index, list);
 		if(index >= 0)
 			portName.stringValue = list[index];
-		else
-			portName.stringValue = "";
-		if(GUILayout.Button("Search") == true)
+		if(GUILayout.Button("Search", GUILayout.Width(60f)) == true)
 			serial.PortSearch();
 		EditorGUILayout.EndHorizontal();
 
