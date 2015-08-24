@@ -79,14 +79,14 @@ namespace SmartMaker
 				}
 			}
 		}
-
+/*
 		public override string[] SketchIncludes()
 		{
 			List<string> includes = new List<string>();
 			includes.Add("#include <Adafruit_NeoPixel.h>");
 			return includes.ToArray();
 		}
-
+*/
 		public override string SketchDeclaration()
 		{
 			string configString = "";
@@ -160,7 +160,8 @@ namespace SmartMaker
 			Push(_red);
 			Push(_green);
 			Push(_blue);
-			Push((byte)(_brightness * 255f));
+			int ibrightness = (int)(_brightness * 255f);
+			Push((byte)ibrightness);
 
 			for(int i=0; i<_pixels.Length; i++)
 			{

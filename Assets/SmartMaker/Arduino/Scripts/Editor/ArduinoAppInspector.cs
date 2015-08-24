@@ -185,7 +185,14 @@ public class ArduinoAppInspector : Editor
 					{
 						string[] subFiles = Directory.GetFiles(subPath);
 						foreach(string subFile in subFiles)
-							File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+						{
+							if(Path.GetExtension(subFile).Equals(".h") == true
+							   || Path.GetExtension(subFile).Equals(".cpp") == true
+							   || Path.GetExtension(subFile).Equals(".c") == true)
+							{
+								File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+							}
+						}
 					}
 				}
 			}
