@@ -46,19 +46,25 @@ namespace SmartMaker
 		public void PortSearch()
 		{
 			portNames.Clear();
-#if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
-			portNames.AddRange(SerialPort.GetPortNames());
-#else
-			string prefix = "/dev/";
-			string[] ports = Directory.GetFiles("/dev/", "*.*");
-			foreach (string p in ports)
+
+			if (Application.platform == RuntimePlatform.WindowsPlayer
+			    || Application.platform == RuntimePlatform.WindowsEditor)
 			{
-				if(p.StartsWith ("/dev/cu.usb") == true)
-					portNames.Add(p.Substring(prefix.Length));
-			//	else if(p.StartsWith ("/dev/tty.usb") == true)
-			//		portNames.Add(p.Substring(prefix.Length));
+				portNames.AddRange(SerialPort.GetPortNames());
 			}
-#endif
+			else if (Application.platform == RuntimePlatform.OSXPlayer
+			         || Application.platform == RuntimePlatform.OSXEditor)
+			{
+				string prefix = "/dev/";
+				string[] ports = Directory.GetFiles("/dev/", "*.*");
+				foreach (string p in ports)
+				{
+					if(p.StartsWith ("/dev/cu.usb") == true)
+						portNames.Add(p.Substring(prefix.Length));
+					//  else if(p.StartsWith ("/dev/tty.usb") == true)
+					//      portNames.Add(p.Substring(prefix.Length));
+				}
+			}
 
 			if(uiPanel != null && uiItem != null)
 			{
@@ -102,13 +108,20 @@ namespace SmartMaker
 
 		public override void Open()
 		{
-#if UINTY_STANDALONE_WIN || UNITY_EDITOR_WIN
-			_serialPort.PortName = "//./" + portName;
-#elif UINTY_STANDALONE_OSX || UNITY_EDITOR_OSX
-			_serialPort.PortName = "/dev/" + portName;
-#else
-			_serialPort.PortName = portName;
-#endif
+            if (Application.platform == RuntimePlatform.WindowsPlayer
+                || Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                _serialPort.PortName = "//./" + portName;
+            }
+            else if (Application.platform == RuntimePlatform.OSXPlayer
+                || Application.platform == RuntimePlatform.OSXEditor)
+            {
+                _serialPort.PortName = "/dev/" + portName;
+            }
+            else
+            {
+                _serialPort.PortName = portName;
+            }
 
 			try
 			{
