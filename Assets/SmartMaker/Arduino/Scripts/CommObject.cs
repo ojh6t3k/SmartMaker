@@ -8,7 +8,7 @@ namespace SmartMaker
 	[AddComponentMenu("SmartMaker/Arduino/Internal/CommObject")]
 	public class CommObject : MonoBehaviour
 	{
-		public ArduinoApp owner;
+		public HostApp owner;
 		public EventHandler OnOpened;
 		public EventHandler OnOpenFailed;
 		public EventHandler OnErrorClosed;
