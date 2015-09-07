@@ -40,7 +40,7 @@ public class ArduinoAppInspector : Editor
 		{
 			if(arduino.commObject != null)
 			{
-				if(arduino.Connected == true)
+				if(arduino.connected == true)
 				{
 					if(GUILayout.Button("Disconnect") == true)
 						arduino.Disconnect();

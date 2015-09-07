@@ -27,9 +27,11 @@ namespace SmartMaker
 
 #if UNITY_STANDALONE
 		private SerialPort _serialPort;
+#endif
 
 		void Awake()
 		{
+#if UNITY_STANDALONE
 			_serialPort = new SerialPort();
 			_serialPort.DtrEnable = true; // win32 hack to try to get DataReceived event to fire
 			_serialPort.RtsEnable = true;
@@ -38,6 +40,7 @@ namespace SmartMaker
 			_serialPort.StopBits = StopBits.One;
 			_serialPort.ReadTimeout = 1; // since on windows we *cannot* have a separate read thread
 			_serialPort.WriteTimeout = 1000;
+#endif
 
 			if(uiText != null)
 				uiText.text = portName;
@@ -46,26 +49,24 @@ namespace SmartMaker
 		public void PortSearch()
 		{
 			portNames.Clear();
+#if UNITY_STANDALONE
 
-			if (Application.platform == RuntimePlatform.WindowsPlayer
-			    || Application.platform == RuntimePlatform.WindowsEditor)
-			{
-				portNames.AddRange(SerialPort.GetPortNames());
-			}
-			else if (Application.platform == RuntimePlatform.OSXPlayer
-			         || Application.platform == RuntimePlatform.OSXEditor)
-			{
-				string prefix = "/dev/";
-				string[] ports = Directory.GetFiles("/dev/", "*.*");
-				foreach (string p in ports)
-				{
-					if(p.StartsWith ("/dev/cu.usb") == true)
-						portNames.Add(p.Substring(prefix.Length));
-					//  else if(p.StartsWith ("/dev/tty.usb") == true)
-					//      portNames.Add(p.Substring(prefix.Length));
-				}
-			}
+#if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
+            portNames.AddRange(SerialPort.GetPortNames());
+#elif (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX)
+            string prefix = "/dev/";
+            string[] ports = Directory.GetFiles("/dev/", "*.*");
+            foreach (string p in ports)
+            {
+                if(p.StartsWith ("/dev/cu.usb") == true)
+                    portNames.Add(p.Substring(prefix.Length));
+                //  else if(p.StartsWith ("/dev/tty.usb") == true)
+                //      portNames.Add(p.Substring(prefix.Length));
+            }
+#endif
 
+#endif
+            
 			if(uiPanel != null && uiItem != null)
 			{
 				List<GameObject> items = new List<GameObject>();
@@ -108,20 +109,15 @@ namespace SmartMaker
 
 		public override void Open()
 		{
-            if (Application.platform == RuntimePlatform.WindowsPlayer
-                || Application.platform == RuntimePlatform.WindowsEditor)
-            {
-                _serialPort.PortName = "//./" + portName;
-            }
-            else if (Application.platform == RuntimePlatform.OSXPlayer
-                || Application.platform == RuntimePlatform.OSXEditor)
-            {
-                _serialPort.PortName = "/dev/" + portName;
-            }
-            else
-            {
-                _serialPort.PortName = portName;
-            }
+#if UNITY_STANDALONE
+
+#if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
+            _serialPort.PortName = "//./" + portName;
+#elif (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX)
+            _serialPort.PortName = "/dev/" + portName;
+#else
+            _serialPort.PortName = portName;
+#endif
 
 			try
 			{
@@ -137,11 +133,16 @@ namespace SmartMaker
 			{
 				if(OnOpenFailed != null)
 					OnOpenFailed(this, null);
-			}			
+			}
+#else
+            if(OnOpenFailed != null)
+                OnOpenFailed(this, null);
+#endif
 		}
 
 		public override void Close()
 		{
+#if UNITY_STANDALONE
 			try
 			{
 				_serialPort.Close();
@@ -149,6 +150,7 @@ namespace SmartMaker
 			catch(Exception)
 			{
 			}
+#endif
 		}
 
 		public override void Write(byte[] bytes)
@@ -158,6 +160,7 @@ namespace SmartMaker
 			if(bytes.Length == 0)
 				return;
 
+#if UNITY_STANDALONE
 			try
 			{
 				_serialPort.Write(bytes, 0, bytes.Length);
@@ -167,10 +170,15 @@ namespace SmartMaker
 				if(OnErrorClosed != null)
 					OnErrorClosed(this, null);
 			}
+#else
+            if(OnErrorClosed != null)
+                OnErrorClosed(this, null);
+#endif
 		}
 
 		public override byte[] Read()
 		{
+#if UNITY_STANDALONE
 			List<byte> bytes = new List<byte>();
 
 			while(true)
@@ -195,83 +203,32 @@ namespace SmartMaker
 				return null;
 			else
 				return bytes.ToArray();
+#else
+            return null;
+#endif
 		}
 
 		public override bool IsOpen
 		{
 			get
 			{
+#if UNITY_STANDALONE
 				if(_serialPort == null)
 					return false;
 
 				return _serialPort.IsOpen;
-			}
-		}
-
-		public void SelectPortName(Text text)
-		{
-			portName = text.text;
-			if(uiText != null)
-				uiText.text = portName;
-		}
 #else
-		void Awake()
-		{
-			if(uiText != null)
-				uiText.text = portName;
-		}
-		
-		public void PortSearch()
-		{
-			portNames.Clear();
-
-			if(uiPanel != null && uiItem != null)
-			{
-				List<GameObject> items = new List<GameObject>();
-				foreach(RectTransform rect in uiPanel)
-				{
-					if(rect.gameObject.Equals(uiItem) == false)
-						items.Add(rect.gameObject);						
-				}
-				
-				foreach(GameObject go in items)
-					GameObject.DestroyImmediate(go);
-				
-				Text t = uiItem.GetComponent<Text>();
-				if(t == null)
-					t = uiItem.GetComponentInChildren<Text>();
-				
-				if(portNames.Count == 0)
-				{
-					if(t != null)
-						t.text = "";
-				}
-				else
-				{
-					if(t != null)
-						t.text = portNames[0];
-					
-					for(int i=1; i<portNames.Count; i++)
-					{
-						GameObject item = GameObject.Instantiate(uiItem);
-						item.transform.SetParent(uiPanel.transform);
-						t = item.GetComponent<Text>();
-						if(t == null)
-							t = item.GetComponentInChildren<Text>();
-						if(t != null)
-							t.text = portNames[i];
-					}
-				}
+                return false;
+#endif
 			}
 		}
-		
+
 		public void SelectPortName(Text text)
 		{
 			portName = text.text;
 			if(uiText != null)
 				uiText.text = portName;
 		}
-#endif
 
 		public override string SketchSetup ()
 		{

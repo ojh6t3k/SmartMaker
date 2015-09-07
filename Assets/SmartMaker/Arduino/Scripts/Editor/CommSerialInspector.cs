@@ -43,7 +43,7 @@ public class CommSerialInspector : Editor
 
 		GUI.enabled = !serial.IsOpen;
 
-#if UINTY_STANDALONE_OSX || UNITY_EDITOR_OSX
+#if (UINTY_STANDALONE_OSX || UNITY_EDITOR_OSX)
 		EditorGUILayout.PropertyField(portName, new GUIContent("Port Name (/dev/)"));
 #else
 		EditorGUILayout.PropertyField(portName, new GUIContent("Port Name"));

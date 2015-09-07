@@ -12,8 +12,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Message;
+
 
 public class CommBluetooth
 {
@@ -60,7 +59,7 @@ public class CommBluetooth
         {
         }
 
-        return (String[])devNames.toArray();
+        return devNames.toArray(new String[devNames.size()]);
     }
 
     public boolean IsOpening()
