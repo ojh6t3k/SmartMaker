@@ -9,6 +9,7 @@ namespace SmartMaker
     [AddComponentMenu("SmartMaker/Arduino/Internal")]
     public class HostApp : MonoBehaviour
     {
+        public bool useTimeout = true;
         public float timeoutSec = 5f;
 
         public UnityEvent OnConnected;
@@ -60,10 +61,13 @@ namespace SmartMaker
                 OnUpdate();
 
                 // Check timeout
-                if(_timeout > timeoutSec) // wait until timeout seconds
-                    ErrorDisconnect();
-                else
-                    _timeout += Time.deltaTime;
+                if(useTimeout == true)
+                {
+                    if(_timeout > timeoutSec) // wait until timeout seconds
+                        ErrorDisconnect();
+                    else
+                        _timeout += Time.deltaTime;
+                }
             }
     	}
 
