@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 
 namespace SmartMaker
@@ -19,8 +16,20 @@ namespace SmartMaker
 			Ready = 0x84, //132
 			Ping = 0x85 //133
 		}
+        public enum StreamClass
+        {
+            Serial,
+            Serial1,
+            Serial2,
+            Serial3,
+            Serial4,
+            Bridge
+        }
 
-		private AppAction[] _actions;
+        public StreamClass streamClass = StreamClass.Serial;
+        public int baudrate = 115200;
+
+        private AppAction[] _actions;
         private float _time = 0f;
 		private bool _processProtocolTx = false;
 		private int _processUpdate = 0;

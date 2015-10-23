@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SmartMaker
 {
-	[AddComponentMenu("SmartMaker/Arduino/Communication/CommOTG")]
+	[AddComponentMenu("SmartMaker/Unity3D/Communication/CommOTG")]
 	public class CommOTG : CommObject
 	{
 #if UNITY_ANDROID
