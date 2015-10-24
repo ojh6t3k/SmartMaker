@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-#if UNITY_STANDALONE
 using System.Threading;
+
+#if UNITY_STANDALONE
 using System.IO;
 using System.IO.Ports;
+#endif
+
+#if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
+using System.Management;
 #endif
 
 
@@ -17,10 +22,10 @@ namespace SmartMaker
 
         private bool _threadOnOpen = false;
         private bool _threadOnOpenFailed = false;
+        private Thread _openThread;
 
 #if UNITY_STANDALONE
-        private SerialPort _serialPort;
-        private Thread _openThread;
+        private SerialPort _serialPort;        
 #endif
 
         void Awake()
@@ -116,14 +121,24 @@ namespace SmartMaker
                 foundDevice.address = "//./" + port;
                 foundDevices.Add(foundDevice);
             }
-            System.Management.ManagementObjectSearcher Searcher = new System.Management.ManagementObjectSearcher("Select * from WIN32_SerialPort");
-            foreach (System.Management.ManagementObject Port in Searcher.Get())
+
+            /* NotImplementedException로 진행 못하고 있음 dll이 올바로 작동하지 않는 것으로 보임
+            ConnectionOptions options = new ConnectionOptions();
+            options.Impersonation = ImpersonationLevel.Impersonate;
+            options.Authentication = AuthenticationLevel.Default;
+            options.EnablePrivileges = true;
+            ManagementScope scope = new ManagementScope(@"\\" + Environment.MachineName + @"\root\CIMV2", options);
+            scope.Connect();
+            ObjectQuery query = new ObjectQuery("SELECT * FROM Win32_PnPEntity WHERE ConfigManagerErrorCode = 0");
+            ManagementObjectSearcher Searcher = new ManagementObjectSearcher(scope, query);
+            foreach (ManagementObject Port in Searcher.Get())
             {
-                foreach (System.Management.PropertyData Property in Port.Properties)
+                foreach (PropertyData Property in Port.Properties)
                 {
                     Debug.Log(Property.Name + " " + (Property.Value == null ? null : Property.Value.ToString()));
                 }
             }
+            */
 #elif (UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX)
             string prefix = "/dev/";
             string[] ports = Directory.GetFiles(prefix, "*.*");

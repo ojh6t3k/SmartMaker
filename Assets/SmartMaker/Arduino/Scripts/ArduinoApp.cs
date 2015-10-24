@@ -266,10 +266,12 @@ namespace SmartMaker
 
         protected override void OnDisconnect()
         {
-            commObject.Write(new byte[] { (byte)CMD.Exit });
-
-            foreach(AppAction action in _actions)
-                action.ActionStop();
+            if(connected)
+            {
+                commObject.Write(new byte[] { (byte)CMD.Exit });
+                foreach (AppAction action in _actions)
+                    action.ActionStop();
+            }
         }
 
         protected override void OnErrorDisconnect()
