@@ -8,10 +8,11 @@ using System.IO;
 using System.IO.Ports;
 #endif
 
+/*
 #if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
 using System.Management;
 #endif
-
+*/
 
 namespace SmartMaker
 {

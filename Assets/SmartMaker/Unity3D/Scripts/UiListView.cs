@@ -91,7 +91,14 @@ namespace SmartMaker
 
         public void ClearItem()
         {
-            _selectedItem = null;
+            if (_itemNum == 0)
+                return;
+
+            if(_selectedItem != null)
+            {
+                _selectedItem = null;
+                OnChangedSelection.Invoke();
+            }
 
             List<GameObject> list = new List<GameObject>();
             foreach (Transform item in itemRoot.transform)
@@ -100,7 +107,7 @@ namespace SmartMaker
             for (int i = 0; i < list.Count; i++)
                 GameObject.DestroyImmediate(list[i]);
 
-            _itemNum = 0;
+            _itemNum = 0;            
         }
 
         public void AddItem(UiListItem item)
@@ -130,9 +137,9 @@ namespace SmartMaker
                 return;
 
             GameObject.DestroyImmediate(_selectedItem.gameObject);
-
-            _selectedItem = null;
             _itemNum--;
+            _selectedItem = null;
+            OnChangedSelection.Invoke();
         }
     }
 }

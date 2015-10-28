@@ -14,12 +14,7 @@ namespace SmartMaker
         public Button connect;
         public RectTransform run;
         public Button disconnect;
-        public Canvas popup;
-        public RectTransform commDevice;
-        public UiListView commDeviceListView;
-        public UiListItem commDeviceListItem;
-        public Button commDeviceOK;
-        public Button commDeviceCancel;
+        public UiCommDevice uiCommDevice;
         public Canvas message;
         public RectTransform connecting;
         public RectTransform connectionFailed;
@@ -32,13 +27,12 @@ namespace SmartMaker
             hostApp.OnConnected.AddListener(OnHostAppConnected);
             hostApp.OnConnectionFailed.AddListener(OnHostAppConnectionFailed);
             hostApp.OnDisconnected.AddListener(OnHostAppDisconnected);
-            hostApp.OnLostConnection.AddListener(OnHostAppLostConnection);
-            hostApp.commObject.OnFoundDevice.AddListener(OnCommObjectFoundDevice);
+            hostApp.OnLostConnection.AddListener(OnHostAppLostConnection);            
             quit.onClick.AddListener(OnQuitClick);
             connect.onClick.AddListener(OnConnectClick);
             disconnect.onClick.AddListener(OnDisconnectClick);
-            commDeviceOK.onClick.AddListener(OnCommDeviceOKClick);
-            commDeviceCancel.onClick.AddListener(OnCommDeviceCancelClick);
+            uiCommDevice.OnCommDeviceOK.AddListener(OnCommDeviceOKClick);
+            uiCommDevice.OnCommDeviceCancel.AddListener(OnCommDeviceCancelClick);
             connectionFailedOK.onClick.AddListener(OnConnectionFailedOKClick);
             lostConnectionOK.onClick.AddListener(OnLostConnectionOKClick);
         }
@@ -47,9 +41,7 @@ namespace SmartMaker
         void Start()
         {
             start.gameObject.SetActive(true);
-            run.gameObject.SetActive(false);
-            popup.gameObject.SetActive(false);
-            commDevice.gameObject.SetActive(false);
+            run.gameObject.SetActive(false);            
             message.gameObject.SetActive(false);
             connecting.gameObject.SetActive(false);
             connectionFailed.gameObject.SetActive(false);
@@ -89,39 +81,6 @@ namespace SmartMaker
             lostConnection.gameObject.SetActive(true);
         }
 
-        private void OnCommObjectFoundDevice()
-        {
-            List<CommDevice> foundDevices = hostApp.commObject.foundDevices;            
-            UiListItem[] items = commDeviceListView.items;
-            List<CommDevice> addList = new List<CommDevice>();
-            
-            for(int i=0; i<foundDevices.Count; i++)
-            {
-                bool add = true;
-                for(int j=0; j<items.Length; j++)
-                {
-                    if(foundDevices[i].Equals((CommDevice)items[j].data))
-                    {
-                        add = false;
-                        break;
-                    }
-                }
-                if (add)
-                    addList.Add(foundDevices[i]);
-            }
-
-            CommDevice device = hostApp.commObject.device;
-            for (int i = 0; i < addList.Count; i++)
-            {
-                UiListItem item = GameObject.Instantiate(commDeviceListItem);
-                item.textList[0].text = addList[i].name;
-                item.data = addList[i];
-                commDeviceListView.AddItem(item);
-                if (device.Equals(addList[i]))
-                    commDeviceListView.selectedItem = item;
-            }                
-        }
-
         private void OnQuitClick()
         {
             hostApp.Disconnect();
@@ -130,11 +89,7 @@ namespace SmartMaker
 
         private void OnConnectClick()
         {
-            popup.gameObject.SetActive(true);
-            commDevice.gameObject.SetActive(true);
-
-            commDeviceListView.ClearItem();
-            hostApp.commObject.StartSearch();
+            uiCommDevice.ShowUI();            
         }
 
         private void OnDisconnectClick()
@@ -144,25 +99,13 @@ namespace SmartMaker
 
         private void OnCommDeviceOKClick()
         {
-            UiListItem item = commDeviceListView.selectedItem;
-            if(item != null)
-            {
-                popup.gameObject.SetActive(false);
-                commDevice.gameObject.SetActive(false);
-                message.gameObject.SetActive(true);
-                connecting.gameObject.SetActive(true);
-
-                hostApp.commObject.StopSearch();
-                hostApp.commObject.device = new CommDevice((CommDevice)item.data);
-                hostApp.Connect();
-            }
+            message.gameObject.SetActive(true);
+            connecting.gameObject.SetActive(true);
+            hostApp.Connect();
         }
 
         private void OnCommDeviceCancelClick()
-        {
-            hostApp.commObject.StopSearch();
-            popup.gameObject.SetActive(false);
-            commDevice.gameObject.SetActive(false);
+        {            
         }
 
         private void OnConnectionFailedOKClick()
