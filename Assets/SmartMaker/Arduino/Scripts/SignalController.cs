@@ -98,9 +98,11 @@ namespace SmartMaker
 			_multiplier = multiplier - bias;
 			_time = 0f;
 			_endTime = signals[_index].keys[keyNum - 1].time / _speed;
-			_playing = true;
+            bool curPlaying = _playing;
+            _playing = true;
 
-			OnStarted.Invoke();
+            if(!curPlaying)
+                OnStarted.Invoke();
 		}
 
 		public void Stop()

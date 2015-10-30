@@ -306,7 +306,11 @@ public class CommBluetooth
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				Log.d(_logTag, "Bluetooth Device Found: " + device.getName());
 				
-				UnityPlayer.UnitySendMessage(_unityObject, _unityMethodFoundDevice, String.format("%s,%s", device.getName(), device.getAddress()));			
+				String devName = device.getName();
+				String devAddr = device.getAddress();
+				if(devName == null)
+					devName = devAddr;
+				UnityPlayer.UnitySendMessage(_unityObject, _unityMethodFoundDevice, String.format("%s,%s", devName, devAddr));		
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equalsIgnoreCase(action))
 			{

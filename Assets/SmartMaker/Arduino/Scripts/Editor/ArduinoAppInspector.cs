@@ -211,47 +211,59 @@ public class ArduinoAppInspector : Editor
 		sw.Write(source.ToString());
 		sw.Close();
 
-		string[] results = Directory.GetDirectories("Assets/", "SmartMaker", SearchOption.AllDirectories);
+        string[] results = Directory.GetDirectories("Assets/", "Arduino", SearchOption.AllDirectories);
 		if(results.Length > 0)
 		{
-			string srcPath = Path.Combine(results[0], "Arduino/Library");
-			try
-			{
-				CopyLibrary("UnityApp", srcPath, path);
-				CopyLibrary("AppAction", srcPath, path);
-				foreach(Type type in types)
-				{
-					CopyLibrary(type.Name, srcPath, path);
-					string subPath = Path.Combine(srcPath, type.Name);
-					if(Directory.Exists(subPath) == true)
-					{
-						string[] subFiles = Directory.GetFiles(subPath);
-						foreach(string subFile in subFiles)
-						{
-							if(Path.GetExtension(subFile).Equals(".h") == true
-							   || Path.GetExtension(subFile).Equals(".cpp") == true
-							   || Path.GetExtension(subFile).Equals(".c") == true)
-							{
-								File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
-							}
-						}
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				Debug.LogError(e);
-			}
-		}
+            for(int i=0; i<results.Length; i++)
+                results[i] = Path.Combine(results[i], "Library");
+
+            CopyLibrary("UnityApp.h", results, path);
+            CopyLibrary("UnityApp.cpp", results, path);
+            CopyLibrary("AppAction.h", results, path);
+            CopyLibrary("AppAction.cpp", results, path);
+            foreach (Type type in types)
+            {
+                CopyLibrary(type.Name + ".h", results, path);
+                CopyLibrary(type.Name + ".cpp", results, path);
+                for (int i = 0; i < results.Length; i++)
+                {
+                    string subPath = Path.Combine(results[i], type.Name);
+                    if (Directory.Exists(subPath) == true)
+                    {
+                        string[] subFiles = Directory.GetFiles(subPath);
+                        foreach (string subFile in subFiles)
+                        {
+                            if (Path.GetExtension(subFile).Equals(".h") == true
+                               || Path.GetExtension(subFile).Equals(".cpp") == true
+                               || Path.GetExtension(subFile).Equals(".c") == true)
+                            {
+                                File.Copy(subFile, Path.Combine(path, Path.GetFileName(subFile)), true);
+                            }
+                        }
+                    }
+                }                
+            }
+        }
 		else
 		{
 			Debug.LogError(string.Format("Can not find path of Arduino Library!"));
 		}
 	}
 
-	private void CopyLibrary(string name, string srcPath, string destPath)
+	private void CopyLibrary(string fileName, string[] srcPath, string destPath)
 	{
-		File.Copy(Path.Combine(srcPath, name + ".h"), Path.Combine(destPath, name + ".h"), true);
-		File.Copy(Path.Combine(srcPath, name + ".cpp"), Path.Combine(destPath, name + ".cpp"), true);
-	}
+        for(int i=0; i<srcPath.Length; i++)
+        {
+            try
+            {
+                File.Copy(Path.Combine(srcPath[i], fileName), Path.Combine(destPath, fileName), true);
+                return;
+            }
+            catch(Exception)
+            {                
+            }
+        }
+
+        Debug.LogError(string.Format("Failed to copy {0}", fileName));
+    }
 }
