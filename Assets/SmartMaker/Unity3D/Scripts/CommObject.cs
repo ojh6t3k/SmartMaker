@@ -28,6 +28,9 @@ namespace SmartMaker
 
         public bool Equals(CommDevice device)
         {
+            if (device == null)
+                return false;
+
             if (!name.Equals(device.name))
                 return false;
 

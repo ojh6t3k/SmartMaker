@@ -1,4 +1,5 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
+//--- __ECO__ __ACTION__ ---//
 
 using UnityEngine;
 
@@ -6,13 +7,12 @@ using UnityEngine.EventSystems;
 
 namespace HutongGames.PlayMaker.Actions
 {
-	[ActionCategory("uGUI")]
+	[ActionCategory("uGui")]
 	[Tooltip("Gets pointer data on the last System event.")]
 	public class GetLastPointerDataInfo : FsmStateAction
 	{
 
 		public static PointerEventData lastPointeEventData;
-
 
 		[UIHint(UIHint.Variable)]
 		public FsmInt clickCount;
@@ -218,13 +218,14 @@ namespace HutongGames.PlayMaker.Actions
 
 			if (!worldNormal.IsNone)
 			{
-				worldNormal.Value =  lastPointeEventData.worldNormal;
+				worldNormal.Value =  lastPointeEventData.pointerCurrentRaycast.worldNormal;
 			}
 
 			if (!worldPosition.IsNone)
 			{
-				worldPosition.Value =  lastPointeEventData.worldPosition;
+				worldPosition.Value =  lastPointeEventData.pointerCurrentRaycast.worldPosition;
 			}
+
 
 			Finish();
 		}
